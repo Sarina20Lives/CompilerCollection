@@ -19,7 +19,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
 
         public String generarReporte() {
             String simbolos = this.toHtml();
-            return ManejadorArchivo.ManejadorArchivo.escribirTS(simbolos);
+            return Utilidades.ManejadorArchivo.escribirTS(simbolos);
         }
 
         public String toHtml()
