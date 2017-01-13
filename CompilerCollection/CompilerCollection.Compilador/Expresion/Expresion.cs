@@ -96,7 +96,10 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
             // aritmetica + _sum + aritmetica
             if (expresion.ChildNodes.ElementAt(1).FindTokenAndGetText().CompareTo("+") == 0)
             {
-                                       
+
+                
+                
+       
             }
 
             // aritmetica + _sub + aritmetica

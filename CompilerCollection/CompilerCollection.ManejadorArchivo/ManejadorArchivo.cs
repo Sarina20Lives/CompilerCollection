@@ -9,7 +9,8 @@ namespace CompilerCollection.CompilerCollection.ManejadorArchivo
 {
     class ManejadorArchivo
     {
-        private static String RUTA_RAIZ = "C:\\Users\\sarina\\Desktop\\ArchivoJC\\";
+        private static String RUTA_RAIZ = "C:\\FilesCompilerCollection\\";
+
         public static String buscarContenidoArchivoImport(String nombre){
             String file = RUTA_RAIZ + nombre + ".jc";
             String contenido="";
@@ -36,6 +37,33 @@ namespace CompilerCollection.CompilerCollection.ManejadorArchivo
             {
                 Console.WriteLine("Exception: " + e.Message);
             }
+        }
+
+        public static String escribirTS(String simbolos)
+        {
+            String resultado = "Error al generar la tabla de Símbolos";
+            String file = RUTA_RAIZ + "PlantillaTS.html";
+            String contenido = "";
+            try
+            {
+                contenido = File.ReadAllText(file);
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+            contenido = contenido.Replace("__BODY__", simbolos);
+            String fileTS = RUTA_RAIZ + "TS.html";
+            try
+            {
+                File.WriteAllText(fileTS, contenido);
+                resultado = "Tabla de Símbolos Generada correctamente";
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+            return resultado;
         }
 
     }

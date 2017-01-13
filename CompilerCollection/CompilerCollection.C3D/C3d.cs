@@ -105,8 +105,6 @@ namespace CompilerCollection.CompilerCollection.C3D
             try
             {
                 char i = Convert.ToChar(valor);
-                int j = Convert.ToInt32(i);
-                valor = "" + j;
             }
             catch (InvalidCastException e)
             {
@@ -123,32 +121,30 @@ namespace CompilerCollection.CompilerCollection.C3D
         public static C3d crearString(List<String> temps, String valor) 
         {
             C3d c3d = new C3d();
-            Char[] caracteres = valor.ToCharArray();
 
             //Inicio de la cadena
             c3d.cad = generarTemp(temps);
             c3d.esTemp = true;
-            escribir(c3d.cad + "= H");
-            escribir("H = H + 1");
-            escribir("Heap[" + c3d.cad + "] = H");
+            escribirAsignacion(c3d.cad, "H");
+            aumentarH("1");
+            escribirEnHeap(c3d.cad, "H");
 
             //Escribir la cadena
             int i;
             String temp;
-            foreach (Char caracter in caracteres)
+            foreach (var caracter in valor)
             {
                 temp = generarTemp();
-                i = Convert.ToInt32(caracter);
-                escribir(temp + "= H");
-                escribir("Heap[" + temp + "] = " + i);
-                escribir("H = H + 1");
+                escribirAsignacion(temp, "H");
+                escribirEnHeap(temp, caracter.ToString());
+                aumentarH("1");
             }
 
             //Fin de la cadena
             temp = generarTemp();
-            escribir(temp + "= H");
-            escribir("Heap[" + temp + "] = 0");
-            escribir("H = H + 1");
+            escribirAsignacion(temp, "H");
+            escribirEnHeap(temp, "0");
+            aumentarH("1");
 
             c3d.tipo = Constantes.T_STRING;
             return c3d;
@@ -169,7 +165,66 @@ namespace CompilerCollection.CompilerCollection.C3D
             String temp = c3d.cad;
             c3d.cad = generarTemp(temps);
             c3d.esTemp = true;
-            escribir(c3d.cad + "= - " + temp);
+            escribirOperacion(c3d.cad, "", "-", temp);
+            return c3d;
+        }
+
+
+        public void castIntToString() {
+            C3d c3d = new C3d();
+            
+
+
+        }
+
+
+        public static void escribirAsignacion(String destino, String valor) 
+        {
+            escribir(destino + " = " + valor + ";");
+        }
+        public static void escribirOperacion(String destino, String val1, String op, String val2)
+        {
+            escribir(destino + " = " + val1 + op + val2 +";");
+        }
+        public static void aumentarH(String cantidad)
+        {
+            escribir("H = H + " + cantidad + ";");
+        }
+        public static void disminuirH(String cantidad)
+        {
+            escribir("H = H - " + cantidad + ";");
+        }
+        public static void aumentarP(String cantidad)
+        {
+            escribir("P = P + " + cantidad + ";");
+        }
+        public static void disminuirP(String cantidad)
+        {
+            escribir("P = P - " + cantidad + ";");
+        }
+
+        public static void escribirEnHeap(String pos, String valor)
+        {
+            escribir("Heap["+ pos +"] = " + valor + ";");
+        }
+        public static C3d leerDeHeap(String pos, List<String> temps)
+        {
+            C3d c3d = new C3d();
+            c3d.cad = generarTemp(temps);
+            c3d.esTemp = true;
+            escribir(c3d.cad + " = Heap[" + pos + "];");
+            return c3d;
+        }
+        public static void escribirEnPila(String pos, String valor)
+        {
+            escribir("Pila[" + pos + "] = " + valor + ";");
+        }
+        public static C3d leerDePila(String pos, List<String> temps)
+        {
+            C3d c3d = new C3d();
+            c3d.cad = generarTemp(temps);
+            c3d.esTemp = true;
+            escribir(c3d.cad + " = Pila[" + pos + "];");
             return c3d;
         }
 
