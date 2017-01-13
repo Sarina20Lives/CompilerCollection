@@ -1,0 +1,43 @@
+!!-Archivo de entrada:
+Autor: @sarina
+Funcion: probando todas las instrucciones del lenguaje
+-!!
+
+!--Declaracion de imports
+import(archivoA.jc);
+import(archivoB.jc);
+
+!--Declaracion de la clase A
+class A public {
+	atributo1:int public = 0;
+
+	!--Declaracion del constructor
+	A(atributo:int){
+		atributo1 = atributo;
+	};
+
+	!--Declarando el metodo 1:
+	A_Metodo1():void{
+
+	};
+
+}
+
+!--Declaracion de la clase B que hereda de la clase A
+class B private father A{
+	!--llamar al constructor de la clase padre
+	super(5);	
+
+	!--Sobreescribiendo un metodo de la clase padre
+	@override
+	A_Metodo1(){
+	    arreglo1:int[][]= {{1,2}, {3,4}};
+		arreglo1[0][1] = suma(5*9, 2-9+10);
+	};
+
+
+	!--Metodo suma de la clase B
+	suma(a:int, b:int):int{
+		rtrn a + b;
+	};
+}
