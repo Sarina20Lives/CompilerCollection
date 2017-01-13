@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace CompilerCollection.CompilerCollection.ManejadorArchivo
+namespace CompilerCollection.CompilerCollection.Utilidades
 {
     class ManejadorArchivo
     {

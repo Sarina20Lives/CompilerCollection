@@ -37,7 +37,7 @@ namespace CompilerCollection.CompilerCollection.JCode
             List<ClaseJCode> nuevas = new List<ClaseJCode>();
             foreach (ParseTreeNode import in imports.ChildNodes) {
                 nombre = import.FindTokenAndGetText();
-                cadena = ManejadorArchivo.ManejadorArchivo.buscarContenidoArchivoImport(nombre);
+                cadena = Utilidades.ManejadorArchivo.buscarContenidoArchivoImport(nombre);
                 nuevas = generarAst(nombre, cadena);
                 if (nuevas == null)
                 {
