@@ -40,7 +40,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             {
                 return ctx;
             }
-            Padre padre = Padre.crearDeClase(cl.clase);
+            Padre padre = Padre.crearDeClase(cl.archivo, cl.clase);
             generarContextoGlobal(ctx, padre, cl.clase, false);
 
             ParseTreeNode imports = ParserJcode.obtenerImports(cl.clase);
@@ -60,7 +60,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 }
                 foreach (ClaseJCode include in clsInclude) 
                 {
-                    padreInclude = Padre.crearDeClase(include.clase);
+                    padreInclude = Padre.crearDeClase(include.archivo, include.clase);
                     generarContextoGlobal(ctx, padreInclude, include.clase, true);
                 }
 

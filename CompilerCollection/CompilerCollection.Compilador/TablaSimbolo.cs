@@ -17,42 +17,50 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolos = new List<Simbolo>();
         }
 
+        public String generarReporte() {
+            String simbolos = this.toHtml();
+            return Utilidades.ManejadorArchivo.escribirTS(simbolos);
+        }
+
+        public String toHtml()
+        {
+            String html = "";
+            foreach (Simbolo simbolo in simbolos) {
+                html = html + simbolo.toHtml();
+            }
+            return html;
+        }
+
         public void generar(Padre padre, ParseTreeNode raiz) {
-            Simbolo simbolo;
+            Simbolo simbolo = null;
 
             if (raiz.ToString().CompareTo(ConstantesJC.CLASE) == 0)
             {
-                simbolo = Simbolo.resolverClase(raiz);
-                simbolos.Add(simbolo);
+                simbolo = Simbolo.resolverClase(padre.archivo, raiz);
             }
 
             if (raiz.ToString().CompareTo(ConstantesJC.CONSTRUCTOR) == 0)
             {
                 simbolo = Simbolo.resolverConstructor(padre, raiz);
-                if (simbolo != null) {
-                    agregarBloque(simbolo);
-                }
                 padre = Padre.crearDeMetodo(padre, raiz);
             }
 
             if (raiz.ToString().CompareTo(ConstantesJC.PRINCIPAL) == 0)
             {
                 simbolo = Simbolo.resolverPrincipal(padre, raiz);
-                agregarBloque(simbolo);
                 padre = Padre.crearDePrincipal(padre, raiz);
             }
 
             if (raiz.ToString().CompareTo(ConstantesJC.OVERRIDE) == 0 || raiz.ToString().CompareTo(ConstantesJC.METODO) == 0)
             {
                 simbolo = Simbolo.resolverMetodo(padre, raiz);
-                agregarBloque(simbolo);
                 padre = Padre.crearDeMetodo(padre, raiz);
             }
 
             if (raiz.ToString().CompareTo(ConstantesJC.PARAMETRO) == 0)
             {
                 simbolo = Simbolo.resolverParametro(padre, raiz);
-                agregarVariable(simbolo);
+                agregarVariable(simbolo, padre);
             }
 
             if (raiz.ToString().CompareTo(ConstantesJC.DECGLOBAL) == 0)
@@ -60,7 +68,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 simbolo = Simbolo.resolverDeclaracion(padre, raiz, true);
                 if (simbolo != null)
                 {
-                    agregarVariable(simbolo);
+                    agregarVariable(simbolo, padre);
                 }
                 return;
             }
@@ -80,11 +88,31 @@ namespace CompilerCollection.CompilerCollection.Compilador
 
             foreach (ParseTreeNode hijo in raiz.ChildNodes) {
                 generar(padre, hijo);
-            }            
+            }
+
+            if (raiz.ToString().CompareTo(ConstantesJC.CLASE) == 0)
+            {
+                if (simbolo != null)
+                {
+                    simbolo.tamanio = padre.pos;
+                    simbolos.Add(simbolo);
+                }
+            }
+
+            if( raiz.ToString().CompareTo(ConstantesJC.CONSTRUCTOR) == 0 ||
+                raiz.ToString().CompareTo(ConstantesJC.PRINCIPAL) == 0 ||
+                raiz.ToString().CompareTo(ConstantesJC.OVERRIDE) == 0 || 
+                raiz.ToString().CompareTo(ConstantesJC.METODO) == 0)
+            {
+                if (simbolo != null)
+                {
+                    agregarBloque(simbolo, padre);
+                }
+            }
         }
 
 
-        public static void agregarBloque(Simbolo simbolo)
+        public static void agregarBloque(Simbolo simbolo, Padre padre)
         {
             foreach (Simbolo sim in simbolos)
             {
@@ -94,10 +122,11 @@ namespace CompilerCollection.CompilerCollection.Compilador
                     return;
                 }
             }
+            simbolo.tamanio = padre.pos;
             simbolos.Add(simbolo);
         }
 
-        public static void agregarVariable(Simbolo simbolo)
+        public static void agregarVariable(Simbolo simbolo, Padre padre)
         {
             foreach (Simbolo sim in simbolos)
             {
@@ -108,6 +137,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 }
             }
             simbolos.Add(simbolo);
+            padre.aumentarPos();
         }
 
     

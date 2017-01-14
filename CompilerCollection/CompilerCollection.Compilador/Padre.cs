@@ -11,6 +11,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
 {
     class Padre
     {
+        public String archivo = "";
         public String nombre = "";
         public String visibilidad = "";
         public int pos = 2;
@@ -36,11 +37,14 @@ namespace CompilerCollection.CompilerCollection.Compilador
             return padre;
         }
 
-        public static Padre crearDeClase(ParseTreeNode raiz) {
+        public static Padre crearDeClase(String archivo, ParseTreeNode raiz) {
             Padre padre = new Padre();
             padre.nombre = raiz.ChildNodes.ElementAt(0).FindTokenAndGetText();
             padre.visibilidad = "Public";
-            if (raiz.ChildNodes.ElementAt(1).ToString().CompareTo(ConstantesJC.VISIBILIDAD)==0) {
+            padre.archivo = archivo;
+            padre.pos = 0;
+            if (raiz.ChildNodes.ElementAt(1).ToString().CompareTo(ConstantesJC.VISIBILIDAD) == 0)
+            {
                 padre.visibilidad = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).FindTokenAndGetText();
             }
             return padre;
@@ -51,6 +55,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             Padre padre = new Padre();
             padre.nombre = anterior.nombre + "_" + raiz.ChildNodes.ElementAt(0).FindTokenAndGetText() + "_";
             padre.visibilidad = anterior.visibilidad;
+            padre.archivo = anterior.archivo;
             foreach (ParseTreeNode hijo in raiz.ChildNodes)
             {
                 if (hijo.ToString().CompareTo(ConstantesJC.VISIBILIDAD) == 0)
@@ -70,6 +75,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             Padre padre = new Padre();
             padre.nombre = anterior.nombre + "_Main";
             padre.visibilidad = anterior.visibilidad;
+            padre.archivo = anterior.archivo;
             return padre;
         }
     }

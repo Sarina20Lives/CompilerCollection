@@ -23,7 +23,7 @@ namespace CompilerCollection
 
         private void bAnalizar_Click(object sender, EventArgs e)
         {
-            List<ClaseJCode> clases = ParserJcode.generarAst("", rtbEntrada.Text);
+            List<ClaseJCode> clases = ParserJcode.generarAst("ArchivoX", rtbEntrada.Text);
             if (clases==null || clases.Count==0)
             {
                 rtbConsola.Text = "La cadena es invalida";
@@ -34,11 +34,13 @@ namespace CompilerCollection
             TablaSimbolo ts = new TablaSimbolo();
             Padre padre;
             foreach (ClaseJCode clase in clases) {
-                padre = Padre.crearDeClase(clase.clase);
-                ts.generar(padre, clase.clase);    
+                padre = Padre.crearDeClase(clase.archivo, clase.clase);
+                ts.generar(padre, clase.clase);
             }
+            String resultado = ts.generarReporte();
 
-            rtbConsola.Text = "La cadena es valida";
+            rtbConsola.Text = "La cadena es valida\n";
+            rtbConsola.Text += resultado + "\n";
 
         }
     }

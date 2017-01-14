@@ -13,6 +13,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
 {
     class Simbolo
     {
+        public String archivo = "";
         public String nombre = "";
         public String padre = "";
         public String rol = "";
@@ -28,6 +29,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
         public bool instancia = false;
         public List<Dimension> dimensiones = new List<Dimension>();
         public int nivel = -1;
+        public int tamanio = 1;
 
         public static Simbolo resolverParametro(Padre padre, ParseTreeNode raiz) {
             Simbolo simbolo = new Simbolo();
@@ -37,17 +39,18 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.tipo = raiz.ChildNodes.ElementAt(1).FindTokenAndGetText();
             simbolo.visibilidad = padre.visibilidad;
             simbolo.pos = padre.pos;
-            padre.aumentarPos();
+            simbolo.archivo = padre.archivo;
             return simbolo;
         }
 
-        public static Simbolo resolverClase(ParseTreeNode raiz) {
+        public static Simbolo resolverClase(String archivo, ParseTreeNode raiz) {
             Simbolo simbolo = new Simbolo();
             simbolo.nombre = raiz.ChildNodes.ElementAt(0).FindTokenAndGetText();
             simbolo.padre = "";
             simbolo.rol = "Clase";
             simbolo.tipo = simbolo.nombre;
             simbolo.visibilidad = "Public";
+            simbolo.archivo = archivo;
 
             foreach (ParseTreeNode hijo in raiz.ChildNodes)
             {
@@ -72,6 +75,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.rol = "Main";
             simbolo.tipo = "Void";
             simbolo.visibilidad = padre.visibilidad;
+            simbolo.archivo = padre.archivo;
             return simbolo;
         }
 
@@ -87,6 +91,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.rol = "Constructor";
             simbolo.tipo = padre.nombre;
             simbolo.visibilidad = "Public";
+            simbolo.archivo = padre.archivo;
 
             foreach (ParseTreeNode hijo in raiz.ChildNodes) { 
                 if(hijo.ToString().CompareTo (ConstantesJC.PARAMETROS)==0){
@@ -107,6 +112,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.padre = padre.nombre;
             simbolo.rol = "Metodo";
             simbolo.visibilidad = padre.visibilidad;
+            simbolo.archivo = padre.archivo;
 
             foreach (ParseTreeNode hijo in raiz.ChildNodes)
             {
@@ -142,8 +148,9 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.visibilidad = padre.visibilidad;
             simbolo.pos = padre.pos;
             simbolo.esGlobal = esGlobal;
-            padre.aumentarPos();
-            foreach (ParseTreeNode hijo in declaracion.ChildNodes) { 
+            simbolo.archivo = padre.archivo;
+            foreach (ParseTreeNode hijo in declaracion.ChildNodes)
+            { 
                 if(hijo.ToString().CompareTo(ConstantesJC.VISIBILIDAD)==0){
                     simbolo.visibilidad = hijo.ChildNodes.ElementAt(0).FindTokenAndGetText();                
                 }
@@ -158,6 +165,10 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 }
                 if (hijo.ToString().CompareTo(ConstantesJC.ASIGARR) == 0) {
                     simbolo.dimensiones = resolverDimensiones(simbolo.contDims, simbolo.tipo,  hijo);
+                    if (simbolo.contDims != simbolo.dimensiones.Count()) 
+                    {
+                        return null;
+                    }
                     simbolo.instancia = true;
                 }
             }
@@ -252,5 +263,31 @@ namespace CompilerCollection.CompilerCollection.Compilador
             return false;
         }
 
+        public String toHtml() {
+            String html = "<tr>\n";
+                html = html + "\t<td>" + this.archivo + "</td>\n";
+                html = html + "\t<td>" + this.nombre +"</td>\n";
+                html = html + "\t<td>" + this.padre +"</td>\n";
+                html = html + "\t<td>" + this.rol +"</td>\n";
+                html = html + "\t<td>" + this.tipo +"</td>\n";
+                html = html + "\t<td>" + this.visibilidad +"</td>\n";
+                if (this.pos == -1)
+                {
+                    html = html + "\t<td></td>\n";
+                }
+                else 
+                {
+                    html = html + "\t<td>" + this.pos + "</td>\n";
+                }
+                html = html + "\t<td>" + Convert.ToString(this.esArr) +"</td>\n";
+                html = html + "\t<td>" + this.contDims + "</td>\n";
+                html = html + "\t<td>" + this.contParametros + "</td>\n";
+                html = html + "\t<td>" + this.parametros + "</td>\n";
+                html = html + "\t<td>" + Convert.ToString(this.esGlobal) + "</td>\n";
+                html = html + "\t<td>" + Convert.ToString(this.instancia) + "</td>\n";
+                html = html + "\t<td>" + this.tamanio + "</td>\n";
+                return html + "</tr>\n";        
+
+        }
     }
 }
