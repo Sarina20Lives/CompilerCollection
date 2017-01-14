@@ -15,9 +15,14 @@ namespace CompilerCollection.CompilerCollection.Utilidades
 
         private static ManejadorErrores singleton = null;
         
-        public static void iniciar()
+        public static void Iniciar()
         {
             singleton = new ManejadorErrores();
+        }
+
+        public static void SetArchivo(string archivo)
+        {
+            singleton.archivo = archivo;
         }
 
         public static void General(string descripcion, int linea, int columna, string archivo)
@@ -90,6 +95,7 @@ namespace CompilerCollection.CompilerCollection.Utilidades
         private ManejadorErrores()
         {
             this.errores = new List<Error>();
+            this.archivo = "*";
         }
 
         private void AddError(Error error)
