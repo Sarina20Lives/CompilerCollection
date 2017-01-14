@@ -70,7 +70,8 @@
     <Compile Include="CompilerCollection.JCode\ConstantesJC.cs" />
     <Compile Include="CompilerCollection.JCode\GrammarJcode.cs" />
     <Compile Include="CompilerCollection.JCode\ParserJcode.cs" />
-    <Compile Include="CompilerCollection.ManejadorArchivo\ManejadorArchivo.cs" />
+    <Compile Include="CompilerCollection.Utilidades\ManejadorArchivo.cs" />
+    <Compile Include="CompilerCollection.Utilidades\ManejadorErrores.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

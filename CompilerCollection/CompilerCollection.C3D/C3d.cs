@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CompilerCollection.CompilerCollection.Utilidades;
 
 namespace CompilerCollection.CompilerCollection.C3D
 {
@@ -176,8 +177,7 @@ namespace CompilerCollection.CompilerCollection.C3D
 
         public static void escribir(String cadena)
         {
-            cadena = cadena + "\n";
-            ManejadorArchivo.ManejadorArchivo.escribirC3d(cadena);
+            Utilidades.ManejadorArchivo.escribirC3d(cadena + "\n");
         }
 
 
