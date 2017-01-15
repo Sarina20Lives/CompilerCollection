@@ -39,6 +39,19 @@ namespace CompilerCollection.CompilerCollection.Utilidades
             }
         }
 
+        public static void iniciarC3d()
+        {
+            String file = RUTA_RAIZ + "c3d.txt";
+            try
+            {
+                File.WriteAllText(file, "");
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+        }
+
         public static String escribirTS(String simbolos)
         {
             String resultado = "Error al generar la tabla de Símbolos";

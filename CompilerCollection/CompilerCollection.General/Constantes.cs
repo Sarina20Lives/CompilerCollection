@@ -20,5 +20,11 @@ namespace CompilerCollection.CompilerCollection.General
         public static int T_CHAR = 4;
         public static int T_STRING = 5;
         public static int T_OBJETO = 6;
+
+
+        //Errores
+        public static int ERROR_DIV_CERO = 0;
+        public static int ERROR_MOD_CERO = 0;
+
     }
 }

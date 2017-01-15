@@ -31,6 +31,7 @@ namespace CompilerCollection.CompilerCollection.JCode
         public static String HERENCIA = "herencia";
         public static String CONSTRUCTOR = "constructor";
         public static String PRINCIPAL = "principal";
+        public static String ELEMENTOS = "elementos";
         public static String SENTENCIAS = "sentencias";
        
     }

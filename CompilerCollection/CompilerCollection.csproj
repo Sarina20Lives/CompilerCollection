@@ -55,6 +55,7 @@
     <Compile Include="CompilerCollection.ACode\GrammarAcode.cs" />
     <Compile Include="CompilerCollection.ACode\ParserAcode.cs" />
     <Compile Include="CompilerCollection.C3D\C3d.cs" />
+    <Compile Include="CompilerCollection.C3D\GeneradorC3d.cs" />
     <Compile Include="CompilerCollection.C3D\GrammarC3D.cs" />
     <Compile Include="CompilerCollection.C3D\ParserC3D.cs" />
     <Compile Include="CompilerCollection.Compilador\Compilador.cs" />

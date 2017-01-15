@@ -7,6 +7,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using CompilerCollection.CompilerCollection.JCode;
 using CompilerCollection.CompilerCollection.C3D;
+using CompilerCollection.CompilerCollection.Utilidades;
 
 namespace CompilerCollection.CompilerCollection.Compilador
 {
@@ -46,7 +47,41 @@ namespace CompilerCollection.CompilerCollection.Compilador
             return null;
         }
 
+        public static String generarTablaSimbolos() {
+            //Generación de tabla de símbolos
+            TablaSimbolo ts = new TablaSimbolo();
+            Padre padre;
+            foreach (ClaseJCode clase in repertorioClases)
+            {
+                padre = Padre.crearDeClase(clase.archivo, clase.clase);
+                ts.generar(padre, clase.clase);
+            }
+            String resultado = ts.generarReporte();
+            return resultado;
+        }
 
+        public static String generarC3d() {
+            //Generar C3d
+            Simbolo ambito;
+            GeneradorC3d generadorc3d = new GeneradorC3d();
+            Contexto ctxGlobal = new Contexto();
+            Contexto ctxLocal = new Contexto();
+            generadorc3d.iniciar();
+            foreach (ClaseJCode clase in repertorioClases)
+            {
+                String nombre = clase.clase.ChildNodes.ElementAt(0).FindTokenAndGetText();
+                ambito = TablaSimbolo.buscarClase(clase.archivo, nombre);
+                if (ambito == null)
+                {
+                    ManejadorErrores.General("Comprueba la generación de tabla de símbolos, no se encontro la clase " + nombre + " en el archivo " + clase.archivo);
+                    continue;
+                }
+                generadorc3d.limpiarInit();
+                ctxGlobal = Contexto.crearContextoGlobal(nombre);
+                generadorc3d.generar(ambito, ctxGlobal, ctxLocal, clase.clase);
+            }
+            return "Escritura de C3d finalizada \n";
+        }
 
     }
 }

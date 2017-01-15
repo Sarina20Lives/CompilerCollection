@@ -57,6 +57,7 @@ namespace CompilerCollection.CompilerCollection.JCode
             var _mul = ToTerm("*");
             var _div = ToTerm("/");
             var _pow = ToTerm("^");
+            var _mod = ToTerm("%");
             var _men = ToTerm("<");
             var _may = ToTerm(">");
             var _mene = ToTerm("<=");
@@ -636,7 +637,7 @@ namespace CompilerCollection.CompilerCollection.JCode
               logica + _or + logica
             | logica + _xor + logica
             | logica + _and + logica
-            | logica + _not + logica
+            | _not + logica
             | relacional
             ;
 
@@ -656,6 +657,7 @@ namespace CompilerCollection.CompilerCollection.JCode
             | aritmetica + _mul + aritmetica
             | aritmetica + _div + aritmetica
             | aritmetica + _pow + aritmetica
+            | aritmetica + _mod + aritmetica
             | operando
             ;
 

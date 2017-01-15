@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 using Irony.Ast;
 using Irony.Parsing;
 using CompilerCollection.CompilerCollection.JCode;
+using CompilerCollection.CompilerCollection.Utilidades;
 
 namespace CompilerCollection.CompilerCollection.Compilador
 {
     class TablaSimbolo
     {
-        private static List<Simbolo> simbolos = new List<Simbolo>(); 
+        private static List<Simbolo> simbolos = new List<Simbolo>();
+        private static bool esOverride = false;
 
         public TablaSimbolo(){
+            esOverride = false;
             simbolos = new List<Simbolo>();
         }
 
@@ -41,7 +44,14 @@ namespace CompilerCollection.CompilerCollection.Compilador
 
             if (raiz.ToString().CompareTo(ConstantesJC.CONSTRUCTOR) == 0)
             {
-                simbolo = Simbolo.resolverConstructor(padre, raiz);
+                if (esOverride)
+                {
+                    simbolo = Simbolo.resolverMetodo(padre, raiz);                    
+                }
+                else 
+                {
+                    simbolo = Simbolo.resolverConstructor(padre, raiz);
+                }
                 padre = Padre.crearDeMetodo(padre, raiz);
             }
 
@@ -51,10 +61,15 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 padre = Padre.crearDePrincipal(padre, raiz);
             }
 
-            if (raiz.ToString().CompareTo(ConstantesJC.OVERRIDE) == 0 || raiz.ToString().CompareTo(ConstantesJC.METODO) == 0)
+            if (raiz.ToString().CompareTo(ConstantesJC.METODO) == 0)
             {
                 simbolo = Simbolo.resolverMetodo(padre, raiz);
                 padre = Padre.crearDeMetodo(padre, raiz);
+            }
+
+            if (raiz.ToString().CompareTo(ConstantesJC.OVERRIDE) == 0 )
+            {
+                esOverride = true;
             }
 
             if (raiz.ToString().CompareTo(ConstantesJC.PARAMETRO) == 0)
@@ -77,7 +92,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             { 
                 simbolo = Simbolo.resolverDeclaracion(padre, raiz, false);
                 if (simbolo != null) {
-                    simbolos.Add(simbolo);
+                    agregarVariable(simbolo, padre);
                 }
                 return;
             }
@@ -94,14 +109,16 @@ namespace CompilerCollection.CompilerCollection.Compilador
             {
                 if (simbolo != null)
                 {
-                    simbolo.tamanio = padre.pos;
+                    if (padre.pos == 0) {
+                        padre.pos = 1;
+                    }
+                    simbolo.tamanio = padre.pos;                    
                     simbolos.Add(simbolo);
                 }
             }
 
             if( raiz.ToString().CompareTo(ConstantesJC.CONSTRUCTOR) == 0 ||
                 raiz.ToString().CompareTo(ConstantesJC.PRINCIPAL) == 0 ||
-                raiz.ToString().CompareTo(ConstantesJC.OVERRIDE) == 0 || 
                 raiz.ToString().CompareTo(ConstantesJC.METODO) == 0)
             {
                 if (simbolo != null)
@@ -114,6 +131,9 @@ namespace CompilerCollection.CompilerCollection.Compilador
 
         public static void agregarBloque(Simbolo simbolo, Padre padre)
         {
+            if (simbolo == null) {
+                return;
+            }
             foreach (Simbolo sim in simbolos)
             {
                 if (Simbolo.compararPorBloque(sim, simbolo))
@@ -122,9 +142,50 @@ namespace CompilerCollection.CompilerCollection.Compilador
                     return;
                 }
             }
+
+            if (esOverride) {
+                simbolo = obtenerTipoOverride(simbolo, padre.clase);
+                esOverride = false;
+                if (simbolo == null)
+                {
+
+                    return;
+                }
+            }
+            
             simbolo.tamanio = padre.pos;
             simbolos.Add(simbolo);
         }
+
+        public static Simbolo obtenerTipoOverride(Simbolo simbolo, String claseActual) {
+            ClaseJCode actual = Compilador.obtenerClasePorNombre(claseActual);
+            if (actual == null)
+            {
+                return null;
+            }
+            ParseTreeNode herencia = ParserJcode.obtenerHerencia(actual.clase);
+            if (herencia == null || herencia.ChildNodes.Count == 0)
+            {
+                ManejadorErrores.General("La clase " + claseActual + " no posee ninguna herencia, por tanto no se puede realizar un override");
+                return null;
+            }
+            ClaseJCode father = Compilador.obtenerClasePorNombre(herencia.ChildNodes.ElementAt(0).FindTokenAndGetText());
+            if (father == null)
+            {
+                ManejadorErrores.General("La clase " + herencia.ChildNodes.ElementAt(0).FindTokenAndGetText() + " no existe");
+                return null;
+            }
+            Simbolo metodo = buscarMetodo(father, simbolo);
+            if (metodo == null)
+            {
+                ManejadorErrores.General("En la clase " + herencia.ChildNodes.ElementAt(0).FindTokenAndGetText() + " no existe un método que se desea sobreescribir " + simbolo.nombre);
+                return null;
+            }
+            simbolo.tipo = metodo.tipo;
+            return simbolo;
+        }
+
+
 
         public static void agregarVariable(Simbolo simbolo, Padre padre)
         {
@@ -140,6 +201,51 @@ namespace CompilerCollection.CompilerCollection.Compilador
             padre.aumentarPos();
         }
 
+        public static Simbolo buscarClase(String archivo, String nombre) 
+        {
+            foreach (Simbolo simbolo in simbolos)
+            {
+                if (simbolo.archivo.CompareTo(archivo) == 0 
+                    && simbolo.nombre.CompareTo(nombre)==0 
+                    && simbolo.rol.Equals("Clase"))
+                {
+                    return simbolo;                    
+                }
+            
+            }
+            return null;        
+        }
+
+        public static Simbolo getSimbolo(Simbolo similar)
+        {
+            if (similar == null) 
+            {
+                return null;
+            }
+            foreach (Simbolo simbolo in simbolos) 
+            {
+                if (simbolo.archivo.CompareTo(similar.archivo) == 0 &&
+                    simbolo.nombre.CompareTo(similar.nombre) == 0 &&
+                    simbolo.rol.CompareTo(similar.rol) == 0 &&
+                    simbolo.padre.CompareTo(similar.padre) == 0 &&
+                    simbolo.parametros.CompareTo(similar.parametros) == 0 &&
+                    simbolo.tipo == similar.tipo) 
+                {
+                    return simbolo;
+                }
+            }
+            return null;
+        }
+
+        public static Simbolo buscarMetodo(ClaseJCode father, Simbolo metodo) {
+            foreach (Simbolo simbolo in simbolos) {
+                if (simbolo.rol.Equals(ConstantesJC.METODO, StringComparison.OrdinalIgnoreCase) &&
+                    simbolo.nombre.Equals(metodo.nombre) && simbolo.parametros.Equals(metodo.parametros)) {
+                        return simbolo;
+                } 
+            }
+            return null;        
+        }
     
     }
 }

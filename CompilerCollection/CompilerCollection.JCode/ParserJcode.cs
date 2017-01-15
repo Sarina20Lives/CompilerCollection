@@ -112,5 +112,19 @@ namespace CompilerCollection.CompilerCollection.JCode
             }
             return null;
         }
+
+        public static ParseTreeNode obtenerHerencia(ParseTreeNode raizClase)
+        {
+
+            foreach (ParseTreeNode hijo in raizClase.ChildNodes)
+            {
+                if (hijo.ToString().CompareTo( ConstantesJC.HERENCIA) ==0)
+                {
+                    return hijo;
+                }
+            }
+            return null;
+        }
+
     }
 }
