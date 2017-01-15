@@ -49,19 +49,19 @@ namespace CompilerCollection.CompilerCollection.C4P
                         break;
                     case "acceso a stack":
                         //Ejecutar acceso a stack
-                        salida += "\t=>, Stack, " + GetString(sentencia, 0) + ", " + GetString(sentencia, 2) +  "\n";
+                        salida += "\t=>, Stack, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 0) +  "\n";
                         break;
-                    case "asigna a stack":
+                    case "asignación a stack":
                         //Ejecutar asigna a stack
-                        salida += "\t<=, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + ", Stack\n";
+                        salida += "\t<=, " + GetString(sentencia, 0) + ", " + GetString(sentencia, 1) + ", Stack\n";
                         break;
                     case "acceso a heap":
                         //Ejecutar acceso a heap
-                        salida += "\t=>, Heap, " + GetString(sentencia, 0) + ", " + GetString(sentencia, 2) + "\n";
+                        salida += "\t=>, Heap, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 0) + "\n";
                         break;
-                    case "asigna a heap":
+                    case "asignación a heap":
                         //Ejecutar asigna a heap
-                        salida += "\t<=, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + ", Heap\n";
+                        salida += "\t<=, " + GetString(sentencia, 0) + ", " + GetString(sentencia, 1) + ", Heap\n";
                         break;
                     case "suma":
                         //Ejecutar suma
@@ -97,31 +97,31 @@ namespace CompilerCollection.CompilerCollection.C4P
                         break;
                     case "salto si igual":
                         //Ejecutar salto si igual
-                        salida += "\tje, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + ", " + GetString(sentencia, 3) + "\n";
+                        salida += "\tje, " + GetString(sentencia, 0) + ", " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + "\n";
                         break;
                     case "salto si diferente":
                         //Ejecutar salto si diferente
-                        salida += "\tjne, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + ", " + GetString(sentencia, 3) + "\n";
+                        salida += "\tjne, " + GetString(sentencia, 0) + ", " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + "\n";
                         break;
                     case "salto si mayor o igual":
                         //Ejecutar salto si mayor o igual
-                        salida += "\tjge, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + ", " + GetString(sentencia, 3) + "\n";
+                        salida += "\tjge, " + GetString(sentencia, 0) + ", " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + "\n";
                         break;
                     case "salto si menor o igual":
                         //Ejecutar salto si menor o igual
-                        salida += "\tjle, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + ", " + GetString(sentencia, 3) + "\n";
+                        salida += "\tjle, " + GetString(sentencia, 0) + ", " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + "\n";
                         break;
                     case "salto si mayor":
                         //Ejecutar salto si mayor
-                        salida += "\tjg, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + ", " + GetString(sentencia, 3) + "\n";
+                        salida += "\tjg, " + GetString(sentencia, 0) + ", " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + "\n";
                         break;
                     case "salto si menor":
                         //Ejecutar salto si menor
-                        salida += "\tjl, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + ", " + GetString(sentencia, 3) + "\n";
+                        salida += "\tjl, " + GetString(sentencia, 0) + ", " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + "\n";
                         break;
                     case "imprime":
                         //Ejecutar función para imprimir a la salida
-                        salida += "\tprintf, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 2) + ",\n";
+                        salida += "\tprintf, " + GetString(sentencia, 1) + ", " + GetString(sentencia, 0) + ",\n";
                         break;
                     case "nonsql":
                         //Ejecutar función nonsql

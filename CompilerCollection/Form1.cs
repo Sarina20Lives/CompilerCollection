@@ -49,7 +49,7 @@ namespace CompilerCollection
         private void button1_Click(object sender, EventArgs e)
         {
             Interprete interprete = new Interprete();
-            interprete.Ejecutar();
+            interprete.EjecutarC3D();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -57,5 +57,13 @@ namespace CompilerCollection
             GeneradorC4P gen = new GeneradorC4P();
             gen.GenerarCuadruplos();
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Interprete interprete = new Interprete();
+            interprete.EjecutarC4P();
+        }
+
+
     }
 }

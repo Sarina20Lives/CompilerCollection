@@ -35,16 +35,32 @@ namespace CompilerCollection.CompilerCollection.Interprete
             Temps = new Dictionary<string, double>();
         }
 
-        public void Ejecutar()
+        public void EjecutarC3D()
         {
             ParseTreeNode nodo = GramaticaC3D.AnalizarC3D();
             if (nodo == null)
             {
-                MessageBox.Show("Ejecutando C3D", "Existen errores en el código 3D generado.");
+                MessageBox.Show("Existen errores en el código 3D generado.", "Ejecutando C3D");
                 return;
             }
+            Ejecutar(nodo, "Código 3 direcciones");
+        }
+
+        public void EjecutarC4P()
+        {
+            ParseTreeNode nodo = GramaticaC4P.AnalizarC4P();
+            if (nodo == null)
+            {
+                MessageBox.Show("Existen errores en los cuádruplos generados.", "Ejecutando C4P");
+                return;
+            }
+            Ejecutar(nodo, "Cuádruplos");
+        }
+
+        private void Ejecutar(ParseTreeNode nodo, string titulo)
+        {
             this.programa = nodo;
-            MessageBox.Show("Ejecutando C3D", "Inicia la ejecución del código 3D.");
+            MessageBox.Show("Inicia la ejecución del código 3D.", titulo);
             ParseTreeNode principal = null;
             foreach (var metodo in programa.ChildNodes)
             {
@@ -56,11 +72,11 @@ namespace CompilerCollection.CompilerCollection.Interprete
             }
             if (principal == null)
             {
-                MessageBox.Show("Ejecutando C3D", "No existe ningún método principal.");
+                MessageBox.Show("No existe ningún método principal.", titulo);
                 return;
             }
             Ejecutar(principal);
-            MessageBox.Show("Ejecutando C3D", "Finaliza la ejecución del código 3D.");
+            MessageBox.Show("Salida:\n" + salida, titulo);
         }
 
         public void Ejecutar(ParseTreeNode metodo)
@@ -82,7 +98,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                         //Ejecutar acceso a stack
                         EjecutarAccesoStack(sentencia);
                         break;
-                    case "asigna a stack":
+                    case "asignación a stack":
                         //Ejecutar asigna a stack
                         EjecutarAsignaStack(sentencia);
                         break;
@@ -90,7 +106,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                         //Ejecutar acceso a heap
                         EjecutarAccesoHeap(sentencia);
                         break;
-                    case "asigna a heap":
+                    case "asignación a heap":
                         //Ejecutar asigna a heap
                         EjecutarAsignaHeap(sentencia);
                         break;
@@ -229,8 +245,8 @@ namespace CompilerCollection.CompilerCollection.Interprete
 
         private void EjecutarImprime(ParseTreeNode sentencia)
         {
-            string formato = sentencia.ChildNodes[1].FindTokenAndGetText();
-            double valor = GetValor(sentencia.ChildNodes[2]);
+            string formato = sentencia.ChildNodes[0].FindTokenAndGetText();
+            double valor = GetValor(sentencia.ChildNodes[1]);
             switch (formato)
             {
                 case "\"%f\"":
@@ -247,9 +263,9 @@ namespace CompilerCollection.CompilerCollection.Interprete
 
         private int EjecutarSaltoCondicional(ParseTreeNode sentencia, ParseTreeNode cuerpo, int i, string p)
         {
-            double valIzq = GetValor(sentencia.ChildNodes[1]);
-            double valDer = GetValor(sentencia.ChildNodes[2]);
-            string etiqueta = sentencia.ChildNodes[3].FindTokenAndGetText();
+            double valIzq = GetValor(sentencia.ChildNodes[0]);
+            double valDer = GetValor(sentencia.ChildNodes[1]);
+            string etiqueta = sentencia.ChildNodes[2].FindTokenAndGetText();
             switch (p)
             {
                 case "==":
@@ -322,27 +338,27 @@ namespace CompilerCollection.CompilerCollection.Interprete
 
         private void EjecutarAsignaHeap(ParseTreeNode sentencia)
         {
-            int indice = (int)GetValor(sentencia.ChildNodes[1]);
-            double valor = GetValor(sentencia.ChildNodes[2]);
+            int indice = (int)GetValor(sentencia.ChildNodes[0]);
+            double valor = GetValor(sentencia.ChildNodes[1]);
             Heap[indice] = valor;
         }
 
         private void EjecutarAccesoHeap(ParseTreeNode sentencia)
         {
-            int indice = (int)GetValor(sentencia.ChildNodes[2]);
+            int indice = (int)GetValor(sentencia.ChildNodes[1]);
             SetValor(sentencia.ChildNodes[0], Heap[indice]);
         }
 
         private void EjecutarAsignaStack(ParseTreeNode sentencia)
         {
-            int indice = (int)GetValor(sentencia.ChildNodes[1]);
-            double valor = GetValor(sentencia.ChildNodes[2]);
+            int indice = (int)GetValor(sentencia.ChildNodes[0]);
+            double valor = GetValor(sentencia.ChildNodes[1]);
             Stack[indice] = valor;
         }
 
         private void EjecutarAccesoStack(ParseTreeNode sentencia)
         {
-            int indice = (int)GetValor(sentencia.ChildNodes[2]);
+            int indice = (int)GetValor(sentencia.ChildNodes[1]);
             SetValor(sentencia.ChildNodes[0], Stack[indice]);
         }
 
