@@ -42,6 +42,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 _charToStr = ToTerm("charToStr"),
                 _boolToStr = ToTerm("boolToStr"),
                 _compareStr = ToTerm("compareStr"),
+                _outString = ToTerm("outString"),
                 _error = ToTerm("error");
 
             Terminal
@@ -248,6 +249,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 | _charToStr + "(" + ")" + ";"
                 | _boolToStr + "(" + ")" + ";"
                 | _compareStr + "(" + ")" + ";"
+                | _outString + "(" + ")" + ";"
                 | _error + "(" + ")" + ";"
             ;
 

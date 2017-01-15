@@ -40,6 +40,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\Irony.Interpreter.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -66,6 +69,7 @@
     <Compile Include="CompilerCollection.Compilador\Simbolo.cs" />
     <Compile Include="CompilerCollection.Compilador\TablaSimbolo.cs" />
     <Compile Include="CompilerCollection.General\Constantes.cs" />
+    <Compile Include="CompilerCollection.Interprete\CollectionNonSQL.cs" />
     <Compile Include="CompilerCollection.Interprete\GramaticaC3D.cs" />
     <Compile Include="CompilerCollection.Interprete\Interprete.cs" />
     <Compile Include="CompilerCollection.JCode\ClaseJCode.cs" />
@@ -94,6 +98,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

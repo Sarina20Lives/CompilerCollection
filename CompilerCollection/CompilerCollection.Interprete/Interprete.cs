@@ -175,21 +175,36 @@ namespace CompilerCollection.CompilerCollection.Interprete
 
         private void EjecutarCore(ParseTreeNode sentencia)
         {
+            int retorno = 0;
             switch (sentencia.ChildNodes[0].Term.ToString())
             {
                 case "intToStr":
+                    Int32 i = (Int32)Stack[P + 1];
+                    retorno = SetString(i.ToString());
                     break;
                 case "doubleToStr":
+                    Double d = Stack[P + 1];
+                    retorno = SetString(d.ToString());
                     break;
                 case "charToStr":
+                    Char c = (Char)Stack[P + 1];
+                    retorno = SetString(c.ToString());
                     break;
                 case "boolToStr":
+                    retorno = (Stack[P + 1] == 0) ? SetString("true") : SetString("false");
                     break;
                 case "compareStr":
+                    retorno = GetString((int)Stack[P + 1]).CompareTo(GetString((int)Stack[P + 2]));
+                    break;
+                case "outString":
+                    salida += GetString((int)Stack[P + 0]);
                     break;
                 case "error":
+                    //Error de ejecución controlado... código en Stack[P + 0]
+                    //retorno = (int)Stack[P + 0];
                     break;
             }
+            Stack[P + 0] = retorno;
         }
 
         private void EjecutarNonSQL(ParseTreeNode sentencia)
@@ -197,16 +212,22 @@ namespace CompilerCollection.CompilerCollection.Interprete
             switch (sentencia.ChildNodes[0].Term.ToString())
             {
                 case "create":
+                    create();
                     break;
                 case "drop":
+                    drop();
                     break;
                 case "insert":
+                    insert();
                     break;
                 case "update":
+                    update();
                     break;
                 case "delete":
+                    delete();
                     break;
                 case "select":
+                    select();
                     break;
             }
         }
@@ -342,6 +363,31 @@ namespace CompilerCollection.CompilerCollection.Interprete
             Ejecutar(metodo);
         }
 
+        private ParseTreeNode BuscarMetodo(string identificador)
+        {
+            foreach (var metodo in programa.ChildNodes)
+            {
+                if (metodo.ChildNodes[0].FindTokenAndGetText() == identificador)
+                {
+                    return metodo;
+                }
+            }
+            return null;
+        }
+
+        private int BuscarEtiqueta(string etiqueta, ParseTreeNode cuerpo)
+        {
+            int i = 0;
+            foreach (var nodo in cuerpo.ChildNodes)
+            {
+                if (nodo.ToString() == "etiqueta")
+                    if (nodo.FindTokenAndGetText() == etiqueta)
+                        return i;
+                i++;
+            }
+            return i;
+        }
+
         private void SetValor(ParseTreeNode destino, double valor)
         {
             string tipoTerminal = destino.Term.ToString();
@@ -380,29 +426,151 @@ namespace CompilerCollection.CompilerCollection.Interprete
             return valor;
         }
 
-        private ParseTreeNode BuscarMetodo(string identificador)
+        private string GetString(int ptr)
         {
-            foreach (var metodo in programa.ChildNodes)
+            string str = "";
+            if (Heap[ptr] == NULL)
             {
-                if (metodo.ChildNodes[0].FindTokenAndGetText() == identificador)
-                {
-                    return metodo;
-                }
+                //Error, null pointer exception
+                return "";
             }
-            return null;
+            int indice = (int)Heap[ptr];
+            char c = (char)Heap[indice];
+            while (c != 0)
+            {
+                str += c;
+                c = (char)Heap[++indice];
+            }
+            return str;
         }
 
-        private int BuscarEtiqueta(string etiqueta, ParseTreeNode cuerpo)
+        private int SetString(string str) 
         {
-            int i = 0;
-            foreach (var nodo in cuerpo.ChildNodes)
+            int ptr = H;
+            Heap[ptr] = ++H;
+            foreach (char c in str)
+                Heap[H++] = c;
+            Heap[H++] = 0;
+            return ptr;
+        }
+        
+        /**
+         * STACK
+         * | 0 | -> this
+         * | 1 | -> return
+         * | 2 | -> PTR al nombre de la colección
+         * | 3 | -> número de columnas
+         * | 4 | -> PTR a la primera columna
+         * | 5 | -> PTR a la segunda columna
+         * |...| -> ...
+         * | x | -> PTR a la n-ésima columna
+         */
+        private void create()
+        {
+            string nombre = GetString((int)Stack[P + 2]);
+            int nocolumnas = (int)Stack[P + 3];
+            string[] columnas = new string[nocolumnas];
+            int paux = P + 4;
+            for (int i = 0; i < nocolumnas; i++)
+                columnas[i] = GetString((int)Stack[paux + i]);
+            CollectionNonSQL.create(nombre, columnas);
+        }
+
+        /**
+         * STACK
+         * | 0 | -> this
+         * | 1 | -> return
+         * | 2 | -> PTR al nombre de la colección
+         */
+        public void drop()
+        {
+            string nombre = GetString((int)Stack[P + 2]);
+            CollectionNonSQL.drop(nombre);
+        }
+
+        /**
+         * STACK
+         * | 0 | -> this
+         * | 1 | -> return
+         * | 2 | -> PTR al nombre de la colección
+         * | 3 | -> número de valores - columnas
+         * | 4 | -> PTR a la primera columna
+         * | 5 | -> PTR al primer valor
+         * |...| -> ...
+         * | x | -> PTR a la n-ésima columna
+         * | y | -> PTR al n-ésimo valor
+         */
+        public void insert()
+        {
+            string nombre = GetString((int)Stack[P + 2]);
+            int noColumnas = (int)Stack[P + 3];
+            string[] columnas = new string[noColumnas];
+            string[] valores = new string[noColumnas];
+            int indiceAux = P + 4;
+            for (int i = 0; i < noColumnas; i++)
             {
-                if (nodo.ToString() == "etiqueta")
-                    if (nodo.FindTokenAndGetText() == etiqueta)
-                        return i;
-                i++;
+                indiceAux += i;
+                columnas[i] = GetString((int)Stack[indiceAux]);
+                valores[i]  = GetString((int)Stack[indiceAux + noColumnas]);
             }
-            return i;
+            CollectionNonSQL.insert(nombre, columnas, valores);
+        }
+
+        /**
+         * STACK
+         * | 0 | -> this
+         * | 1 | -> return
+         * | 2 | -> PTR al nombre de la colección
+         * | 3 | -> PTR al nombre de la columna
+         * | 4 | -> PTR al valor para borrar
+         */
+        public void delete()
+        {
+            string nombre = GetString((int)Stack[P + 2]);
+            string columna = GetString((int)Stack[P + 3]);
+            string valor = GetString((int)Stack[P + 4]);
+            CollectionNonSQL.delete(nombre, columna, valor);
+        }
+
+        /**
+         * STACK
+         * | 0 | -> this
+         * | 1 | -> return
+         * | 2 | -> PTR al nombre de la colección
+         * | 3 | -> PTR al nombre de la columna
+         * | 4 | -> PTR al valor para actualiza
+         * | 5 | -> PTR al valor nuevo
+         */
+        public void update()
+        {
+            string nombre = GetString((int)Stack[P + 2]);
+            string columna = GetString((int)Stack[P + 3]);
+            string valor = GetString((int)Stack[P + 4]);
+            string nuevo = GetString((int)Stack[P + 5]);
+            CollectionNonSQL.update(nombre, columna, valor, nuevo);
+        }
+
+        /**
+         * STACK
+         * | 0 | -> this
+         * | 1 | -> return
+         * | 2 | -> PTR al nombre de la colección
+         * | 3 | -> número de columnas
+         * | 4 | -> PTR a la primera columna
+         * | 5 | -> PTR a la segunda columna
+         * |...| -> ...
+         * | x | -> PTR a la n-ésima columna
+         */
+        public void select()
+        {
+            string nombre = GetString((int)Stack[P + 2]);
+            int nocolumnas = (int)Stack[P + 3];
+            string[] columnas = new string[nocolumnas];
+            int paux = P + 4;
+            for (int i = 0; i < nocolumnas; i++)
+                columnas[i] = GetString((int)Stack[paux + i]);
+            string texto = CollectionNonSQL.select(nombre, columnas);
+            salida += "\n" + texto + "\n";
         }
 
     }
