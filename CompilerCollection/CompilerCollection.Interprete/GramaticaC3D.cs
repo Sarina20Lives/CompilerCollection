@@ -1,6 +1,7 @@
 ﻿using Irony.Parsing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,18 @@ namespace CompilerCollection.CompilerCollection.Interprete
 {
     class GramaticaC3D : Grammar
     {
+        private const string RUTA_C3D = "C:\\FilesCompilerCollection\\c3d.txt";
+
+        public static ParseTreeNode AnalizarC3D()
+        {
+            string c3d = File.ReadAllText(RUTA_C3D);
+            GramaticaC3D gramatica = new GramaticaC3D();
+            LanguageData lenguaje = new LanguageData(gramatica);
+            Parser parser = new Parser(lenguaje);
+            ParseTree arbol = parser.Parse(c3d);
+            return arbol.Root;
+        }
+
         public GramaticaC3D()
             : base(caseSensitive: false)
         {
@@ -113,6 +126,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
 
             metodo.Rule
                 = _void + _id + "(" + ")" + "{" + cuerpo + "}"
+                
             ;
 
             main.Rule

@@ -12,6 +12,7 @@ using Irony.Parsing;
 using CompilerCollection.CompilerCollection.JCode;
 using CompilerCollection.CompilerCollection.Compilador;
 using CompilerCollection.CompilerCollection.Interprete;
+using CompilerCollection.CompilerCollection.C4P;
 
 namespace CompilerCollection
 {
@@ -49,6 +50,12 @@ namespace CompilerCollection
         {
             Interprete interprete = new Interprete();
             interprete.Ejecutar();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            GeneradorC4P gen = new GeneradorC4P();
+            gen.GenerarCuadruplos();
         }
     }
 }

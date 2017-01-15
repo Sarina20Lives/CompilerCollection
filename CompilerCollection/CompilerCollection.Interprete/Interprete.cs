@@ -18,7 +18,6 @@ namespace CompilerCollection.CompilerCollection.Interprete
         private Dictionary<string, double> Temps;
         private string salida;
         private const Double NULL = -51233905.20302;
-        private const string RUTA_C3D = "C:\\FilesCompilerCollection\\c3d.txt";
         private ParseTreeNode programa = null;
 
         public Interprete()
@@ -38,17 +37,13 @@ namespace CompilerCollection.CompilerCollection.Interprete
 
         public void Ejecutar()
         {
-            string c3d = File.ReadAllText(RUTA_C3D);
-            GramaticaC3D gramatica = new GramaticaC3D();
-            LanguageData lenguaje = new LanguageData(gramatica);
-            Parser parser = new Parser(lenguaje);
-            ParseTree arbol = parser.Parse(c3d);
-            if (arbol.Root == null)
+            ParseTreeNode nodo = GramaticaC3D.AnalizarC3D();
+            if (nodo == null)
             {
                 MessageBox.Show("Ejecutando C3D", "Existen errores en el código 3D generado.");
                 return;
             }
-            this.programa = arbol.Root;
+            this.programa = nodo;
             MessageBox.Show("Ejecutando C3D", "Inicia la ejecución del código 3D.");
             ParseTreeNode principal = null;
             foreach (var metodo in programa.ChildNodes)
