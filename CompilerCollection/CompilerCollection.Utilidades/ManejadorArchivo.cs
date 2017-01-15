@@ -26,12 +26,30 @@ namespace CompilerCollection.CompilerCollection.Utilidades
             
         }
 
-        public static void escribirC3d(String cadena)
+        public static void escribirC3d(String cadena, bool esInit)
         {
             String file = RUTA_RAIZ + "c3d.txt";
+            if (esInit) {
+                file = RUTA_RAIZ + "init.txt";
+            }
             try
             {
                 File.AppendAllText(file, cadena);
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+        }
+
+        public static void iniciarC3d()
+        {
+            String fileC3d = RUTA_RAIZ + "c3d.txt";
+            String fileInit = RUTA_RAIZ + "init.txt";
+            try
+            {
+                File.WriteAllText(fileC3d, "");
+                File.WriteAllText(fileInit, "");
             }
             catch (IOException e)
             {

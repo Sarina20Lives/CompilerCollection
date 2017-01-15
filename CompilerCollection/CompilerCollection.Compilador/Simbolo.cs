@@ -7,6 +7,8 @@ using Irony.Ast;
 using Irony.Parsing;
 using CompilerCollection.CompilerCollection.JCode;
 using CompilerCollection.CompilerCollection.General;
+using CompilerCollection.CompilerCollection.Utilidades;
+using CompilerCollection.CompilerCollection.C3D;
 
 
 namespace CompilerCollection.CompilerCollection.Compilador
@@ -25,6 +27,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
         public int contDims = 0;
         public int contParametros = 0;
         public String parametros = "";
+        public String referencia = "";
         public bool esGlobal = false;
         public bool instancia = false;
         public List<Dimension> dimensiones = new List<Dimension>();
@@ -51,6 +54,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.tipo = simbolo.nombre;
             simbolo.visibilidad = "Public";
             simbolo.archivo = archivo;
+            simbolo.referencia = simbolo.nombre;
 
             foreach (ParseTreeNode hijo in raiz.ChildNodes)
             {
@@ -76,6 +80,8 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.tipo = "Void";
             simbolo.visibilidad = padre.visibilidad;
             simbolo.archivo = padre.archivo;
+            simbolo.referencia = padre.nombre + "_" + simbolo.nombre;
+            simbolo.pos = 0;
             return simbolo;
         }
 
@@ -92,11 +98,13 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.tipo = padre.nombre;
             simbolo.visibilidad = "Public";
             simbolo.archivo = padre.archivo;
+            simbolo.referencia = padre.nombre + "_" + simbolo.nombre + "_";
 
             foreach (ParseTreeNode hijo in raiz.ChildNodes) { 
                 if(hijo.ToString().CompareTo (ConstantesJC.PARAMETROS)==0){
                     simbolo.contParametros = hijo.ChildNodes.Count();
                     simbolo.parametros = tiposDeparametrosAString(hijo);
+                    simbolo.referencia += simbolo.parametros;
                 }
             }
             return simbolo;
@@ -104,15 +112,13 @@ namespace CompilerCollection.CompilerCollection.Compilador
 
         public static Simbolo resolverMetodo(Padre padre, ParseTreeNode raiz)
         {
-            if(raiz.ToString().CompareTo(ConstantesJC.OVERRIDE)==0){
-                return resolverMetodo(padre, raiz.ChildNodes.ElementAt(0));
-            }
             Simbolo simbolo = new Simbolo();
             simbolo.nombre = raiz.ChildNodes.ElementAt(0).FindTokenAndGetText();
             simbolo.padre = padre.nombre;
             simbolo.rol = "Metodo";
             simbolo.visibilidad = padre.visibilidad;
             simbolo.archivo = padre.archivo;
+            simbolo.referencia = padre.nombre + "_" + simbolo.nombre + "_";
 
             foreach (ParseTreeNode hijo in raiz.ChildNodes)
             {
@@ -130,6 +136,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 {
                     simbolo.contParametros = hijo.ChildNodes.Count();
                     simbolo.parametros = tiposDeparametrosAString(hijo);
+                    simbolo.referencia += simbolo.parametros;
                 }
             }
             return simbolo;
@@ -167,33 +174,65 @@ namespace CompilerCollection.CompilerCollection.Compilador
                     simbolo.dimensiones = resolverDimensiones(simbolo.contDims, simbolo.tipo,  hijo);
                     if (simbolo.contDims != simbolo.dimensiones.Count()) 
                     {
+                        ManejadorErrores.General("Las dimensiones no corresponden para el arreglo " + simbolo.nombre + " en la clase " + padre.clase);
                         return null;
                     }
                     simbolo.instancia = true;
                 }
             }
+
+            if (simbolo.esObjeto()) {
+                if (Contexto.comprobarPermisoTipoObjeto(simbolo.tipo, padre.clase, simbolo.archivo)) {
+                    return simbolo;
+                }
+                ManejadorErrores.General("Se hace referencia a la clase " + simbolo.tipo + " y la clase no es accesible desde la clase actual " + padre.clase);
+                return null;
+            }
+
             return simbolo;
         }
 
+        public bool esObjeto() {
+            if (this.tipo.Equals("int", StringComparison.OrdinalIgnoreCase)) {
+                return false;
+            }
+            if (this.tipo.Equals("double", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            if (this.tipo.Equals("char", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            if (this.tipo.Equals("string", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            if (this.tipo.Equals("bool", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            return true;
+        }
 
         public static List<Dimension> resolverDimensiones(int cont, String tipo, ParseTreeNode asig) {
             List<Dimension> dimensiones = new List<Dimension>();
             if (asig.ChildNodes.ElementAt(0).ToString().CompareTo(ConstantesJC.CORCHETE) == 0) {
                 dimensiones = contarDimensiones(asig.ChildNodes.ElementAt(0));
-                if (cont != dimensiones.Count) { 
-                    //TODO:ERROR:LA CANTIDAD DE DIMENSIONES NO CONCUERDA
+                if (cont != dimensiones.Count) {
+                    ManejadorErrores.General("Las dimensiones no corresponden en la asignacion");
                     return new List<Dimension>();
                 }
                 return dimensiones;
             }
 
-            if (tipo.CompareTo(asig.ChildNodes.ElementAt(0).FindTokenAndGetText()) != 0) { 
-                //TODO:ERROR:LOS TIPOS ASIGNADOS NO CONCUERDAN
+            if (tipo.CompareTo(asig.ChildNodes.ElementAt(0).FindTokenAndGetText()) != 0) {
+                ManejadorErrores.General("Los tipos asignados no concuerdan ");
                 return new List<Dimension>();
             }
 
-            if (cont != asig.ChildNodes.ElementAt(1).ChildNodes.Count()) { 
-                //TODO:ERROR:LA CANTIDAD DE DIMENSIONES NO CONCUERDA
+            if (cont != asig.ChildNodes.ElementAt(1).ChildNodes.Count()) {
+                ManejadorErrores.General("La cantidad de dimensiones no concuerdan ");
                 return new List<Dimension>();
             }
 
@@ -237,7 +276,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
         public static String tiposDeparametrosAString(ParseTreeNode raiz) {
             String tipos = "";
             foreach (ParseTreeNode parametro in raiz.ChildNodes) {
-                tipos = tipos + "_" + parametro.ChildNodes.ElementAt(1).FindTokenAndGetText();            
+                tipos = tipos + parametro.ChildNodes.ElementAt(1).FindTokenAndGetText() + "_";            
             }
             return tipos;
         }
@@ -262,6 +301,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             }
             return false;
         }
+
 
         public String toHtml() {
             String html = "<tr>\n";

@@ -35,6 +35,7 @@
             this.btnAbrir = new System.Windows.Forms.ToolStripButton();
             this.btnGuardar = new System.Windows.Forms.ToolStripButton();
             this.btnGuardarComo = new System.Windows.Forms.ToolStripButton();
+            this.btnCerrar = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnGenerarC3D = new System.Windows.Forms.ToolStripButton();
             this.btnOptimizaC3D = new System.Windows.Forms.ToolStripButton();
@@ -45,7 +46,6 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.btnTablaSimbolos = new System.Windows.Forms.ToolStripButton();
             this.btnLogError = new System.Windows.Forms.ToolStripButton();
-            this.btnCerrar = new System.Windows.Forms.ToolStripButton();
             this.btnAcercaDe = new System.Windows.Forms.ToolStripButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -72,6 +72,7 @@
             this.rtbConsola.BackColor = System.Drawing.Color.WhiteSmoke;
             this.rtbConsola.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.rtbConsola.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.rtbConsola.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtbConsola.Location = new System.Drawing.Point(3, 247);
             this.rtbConsola.Name = "rtbConsola";
             this.rtbConsola.ReadOnly = true;
@@ -153,6 +154,18 @@
             this.btnGuardarComo.Text = "toolStripButton4";
             this.btnGuardarComo.ToolTipText = "Guardar archivo como...";
             this.btnGuardarComo.Click += new System.EventHandler(this.btnGuardarComo_Click);
+            // 
+            // btnCerrar
+            // 
+            this.btnCerrar.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnCerrar.Image = global::CompilerCollection.Properties.Resources.icono_eliminar;
+            this.btnCerrar.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnCerrar.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnCerrar.Name = "btnCerrar";
+            this.btnCerrar.Size = new System.Drawing.Size(44, 49);
+            this.btnCerrar.Text = "toolStripButton12";
+            this.btnCerrar.ToolTipText = "Cerrar archivo";
+            this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
             // toolStripSeparator1
             // 
@@ -253,18 +266,6 @@
             this.btnLogError.ToolTipText = "Log de errores";
             this.btnLogError.Click += new System.EventHandler(this.btnLogError_Click);
             // 
-            // btnCerrar
-            // 
-            this.btnCerrar.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnCerrar.Image = global::CompilerCollection.Properties.Resources.icono_eliminar;
-            this.btnCerrar.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnCerrar.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnCerrar.Name = "btnCerrar";
-            this.btnCerrar.Size = new System.Drawing.Size(44, 49);
-            this.btnCerrar.Text = "toolStripButton12";
-            this.btnCerrar.ToolTipText = "Cerrar archivo";
-            this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
-            // 
             // btnAcercaDe
             // 
             this.btnAcercaDe.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -309,7 +310,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 4);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(865, 352);
+            this.tabPage2.Size = new System.Drawing.Size(892, 391);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;

@@ -36,6 +36,10 @@ namespace CompilerCollection.CompilerCollection.Utilidades
             General(descripcion, linea, columna, Error.DEFAULT);
         }
 
+        public static void General(string descripcion)
+        {
+            General(descripcion, 0, 0, Error.DEFAULT);
+        }
 
         public static void Semantico(string descripcion, int linea, int columna, string archivo)
         {
@@ -86,6 +90,13 @@ namespace CompilerCollection.CompilerCollection.Utilidades
             }
             reporte = reporte.Replace("__BODY__", body);
             File.WriteAllText(RUTA_REPORTE, reporte);
+        }
+
+        public static bool ExistenErrores()
+        {
+            if (singleton == null)
+                singleton = new ManejadorErrores();
+            return singleton.errores.Count != 0;
         }
 
         private List<Error> errores;

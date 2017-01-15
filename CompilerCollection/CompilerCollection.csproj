@@ -58,6 +58,7 @@
     <Compile Include="CompilerCollection.ACode\GrammarAcode.cs" />
     <Compile Include="CompilerCollection.ACode\ParserAcode.cs" />
     <Compile Include="CompilerCollection.C3D\C3d.cs" />
+    <Compile Include="CompilerCollection.C3D\GeneradorC3d.cs" />
     <Compile Include="CompilerCollection.Compilador\Compilador.cs" />
     <Compile Include="CompilerCollection.Compilador\Contexto.cs" />
     <Compile Include="CompilerCollection.Compilador\Dimension.cs" />
