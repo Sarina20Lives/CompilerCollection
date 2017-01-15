@@ -12,7 +12,6 @@ namespace CompilerCollection.CompilerCollection.Utilidades
         private const string RUTA_GENERAL = "C:\\FilesCompilerCollection\\Reportes\\";
         private const string RUTA_PLANTILLA = RUTA_GENERAL + "PlantillaErrores.html";
         private const string RUTA_REPORTE = RUTA_GENERAL + "Errores.html";
-
         private static ManejadorErrores singleton = null;
         
         public static void Iniciar()

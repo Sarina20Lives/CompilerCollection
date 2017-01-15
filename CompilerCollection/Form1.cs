@@ -12,6 +12,7 @@ using Irony.Parsing;
 using CompilerCollection.CompilerCollection.JCode;
 using CompilerCollection.CompilerCollection.Compilador;
 using CompilerCollection.CompilerCollection.Utilidades;
+using CompilerCollection.CompilerCollection.Interprete;
 using CompilerCollection.CompilerCollection.C3D;
 
 namespace CompilerCollection
@@ -51,6 +52,12 @@ namespace CompilerCollection
 
 
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Interprete interprete = new Interprete();
+            interprete.Ejecutar();
         }
     }
 }
