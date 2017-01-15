@@ -26,7 +26,6 @@ namespace CompilerCollection.CompilerCollection.C3D
 
         public void generar(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
         {
-            String referencia = "";
             if (raiz.ToString().CompareTo(ConstantesJC.CLASE) == 0)
             {
                 //Escribir clase_init
@@ -37,7 +36,6 @@ namespace CompilerCollection.CompilerCollection.C3D
             {
                 //Programar Cambio de Ambito
                 Padre padre = Padre.crear(ambito);
-                referencia = ambito.nombre;
                 ambito = TablaSimbolo.getSimbolo( Simbolo.resolverConstructor(padre, raiz));
                 if (ambito == null)
                 {
@@ -45,16 +43,17 @@ namespace CompilerCollection.CompilerCollection.C3D
                     ambito = TablaSimbolo.obtenerTipoOverride(ambito, padre.clase);
                     ambito = TablaSimbolo.getSimbolo(ambito);
                 }
-                referencia += "_" + ambito.nombre + "_" + ambito.parametros;
-                if (ambito.rol.Equals(ConstantesJC.CONSTRUCTOR, StringComparison.OrdinalIgnoreCase)) {
+                if (ambito.rol.Equals(ConstantesJC.CONSTRUCTOR, StringComparison.OrdinalIgnoreCase))
+                {
                     //Iniciar Constructor
-                    iniciarConstructor(ambito.padre, referencia, ambito.tamanio);
-                    //TODO:Generar el ctx local si tiene parametros
+                    iniciarConstructor(ambito.padre, ambito.referencia, ambito.tamanio);
+                    //Generar el ctx local si tiene parametros
+                    ctxL = Contexto.generarContextoLocal(ambito, ParserJcode.obtenerParametros(raiz));
                 }else{
-                    //TODO:Buscar el tipo en la clase padre, dado que es un override                    
                     //Escribir encabezado de método
-                    C3d.escribir("Void " + referencia + "(){"); 
-                    //TODO:Generar el ctx local si tiene parametros
+                    C3d.escribir("Void " + ambito.referencia + "(){");
+                    //Generar el ctx local si tiene parametros
+                    ctxL = Contexto.generarContextoLocal(ambito, ParserJcode.obtenerParametros(raiz));
                 }
             }
 
@@ -62,24 +61,23 @@ namespace CompilerCollection.CompilerCollection.C3D
             {
                 //Programar Cambio de Ambito
                 Padre padre = Padre.crear(ambito);
-                referencia = ambito.nombre;
                 ambito = TablaSimbolo.getSimbolo(Simbolo.resolverPrincipal(padre, raiz));
-                referencia += "_" + ambito.nombre + "_" + ambito.parametros;
-                C3d.escribir("Void " + referencia + "(){");
+                C3d.escribir("Void " + ambito.referencia + "(){");
             }
 
             if (raiz.ToString().CompareTo(ConstantesJC.METODO) == 0)
             {
                 //Programar Cambio de Ambito
                 Padre padre = Padre.crear(ambito);
-                referencia = ambito.nombre;
                 ambito = TablaSimbolo.getSimbolo(Simbolo.resolverMetodo(padre, raiz));
-                referencia += "_" + ambito.nombre + "_" + ambito.parametros;
-                C3d.escribir("Void " + referencia + "(){");
+                C3d.escribir("Void " + ambito.referencia + "(){");
+                //Generar el ctx local si tiene parametros
+                ctxL = Contexto.generarContextoLocal(ambito, ParserJcode.obtenerParametros(raiz));
             }
 
             if (raiz.ToString().CompareTo(ConstantesJC.DECLOCAL) == 0)
             {
+                ctxL.agregarAlContextoLocal(ambito, raiz);
             }
 
             if (raiz.ChildNodes.Count <= 0)
@@ -89,6 +87,9 @@ namespace CompilerCollection.CompilerCollection.C3D
 
             foreach (ParseTreeNode hijo in raiz.ChildNodes)
             {
+                if(hijo.ToString().CompareTo(ConstantesJC.DECGLOBAL)==0){
+                    continue;
+                }
                 generar(ambito, ctxG, ctxL, hijo);
             }
 

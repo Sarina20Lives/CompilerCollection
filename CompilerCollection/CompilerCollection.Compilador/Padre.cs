@@ -23,7 +23,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
 
         public static Padre crear(Simbolo simbolo) {
             Padre padre = new Padre();
-            padre.nombre = simbolo.nombre;
+            padre.nombre = simbolo.referencia;
             padre.visibilidad = simbolo.visibilidad;
             padre.archivo = simbolo.archivo;
             padre.clase = simbolo.padre;

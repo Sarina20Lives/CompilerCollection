@@ -26,6 +26,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
         public int contDims = 0;
         public int contParametros = 0;
         public String parametros = "";
+        public String referencia = "";
         public bool esGlobal = false;
         public bool instancia = false;
         public List<Dimension> dimensiones = new List<Dimension>();
@@ -52,6 +53,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.tipo = simbolo.nombre;
             simbolo.visibilidad = "Public";
             simbolo.archivo = archivo;
+            simbolo.referencia = simbolo.nombre;
 
             foreach (ParseTreeNode hijo in raiz.ChildNodes)
             {
@@ -77,6 +79,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.tipo = "Void";
             simbolo.visibilidad = padre.visibilidad;
             simbolo.archivo = padre.archivo;
+            simbolo.referencia = padre.nombre + "_" + simbolo.nombre;
             return simbolo;
         }
 
@@ -93,11 +96,13 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.tipo = padre.nombre;
             simbolo.visibilidad = "Public";
             simbolo.archivo = padre.archivo;
+            simbolo.referencia = padre.nombre + "_" + simbolo.nombre + "_";
 
             foreach (ParseTreeNode hijo in raiz.ChildNodes) { 
                 if(hijo.ToString().CompareTo (ConstantesJC.PARAMETROS)==0){
                     simbolo.contParametros = hijo.ChildNodes.Count();
                     simbolo.parametros = tiposDeparametrosAString(hijo);
+                    simbolo.referencia += simbolo.parametros;
                 }
             }
             return simbolo;
@@ -111,6 +116,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.rol = "Metodo";
             simbolo.visibilidad = padre.visibilidad;
             simbolo.archivo = padre.archivo;
+            simbolo.referencia = padre.nombre + "_" + simbolo.nombre + "_";
 
             foreach (ParseTreeNode hijo in raiz.ChildNodes)
             {
@@ -128,6 +134,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 {
                     simbolo.contParametros = hijo.ChildNodes.Count();
                     simbolo.parametros = tiposDeparametrosAString(hijo);
+                    simbolo.referencia += simbolo.parametros;
                 }
             }
             return simbolo;

@@ -33,6 +33,56 @@ namespace CompilerCollection.CompilerCollection.Compilador
             this.nivel = this.nivel - 1;
         }
 
+        public static Contexto generarContextoLocal(Simbolo ambito, ParseTreeNode parametros) {
+            Padre padre = Padre.crear(ambito);
+            Contexto ctx = new Contexto();
+            if (parametros == null || parametros.ChildNodes.Count() == 0) {
+                return ctx;
+            }
+
+            Simbolo param;
+            foreach (ParseTreeNode parametro in parametros.ChildNodes) {
+                param = Simbolo.resolverParametro(padre, parametro);
+                param = TablaSimbolo.getSimbolo(param);
+                if (param != null) {
+                    if (param.esObjeto())
+                    {
+                        if (comprobarPermisoTipoObjeto(param.tipo, padre.clase, padre.archivo)) {
+                            ctx.agregarVariable(ambito, param, false);                                             
+                        }
+                    }
+                    else
+                    {
+                        ctx.agregarVariable(ambito, param, false);                                             
+                    }
+                }
+            }
+            return ctx;
+        }
+
+        public void agregarAlContextoLocal(Simbolo ambito, ParseTreeNode declaracion)
+        {
+            Padre padre = Padre.crear(ambito);
+            Simbolo simbolo = TablaSimbolo.getSimbolo(Simbolo.resolverDeclaracion(padre, declaracion, false));
+            if (simbolo == null)
+            {
+                return;
+            }
+
+            if (simbolo.esObjeto())
+            {
+                if (comprobarPermisoTipoObjeto(simbolo.tipo, padre.clase, padre.archivo))
+                {
+                    this.agregarVariable(ambito, simbolo, false);
+                }
+            }
+            else
+            {
+                this.agregarVariable(ambito, simbolo, false);
+            }
+        }
+
+
         public static Contexto crearContextoGlobal(String clase)
         {
             Contexto ctx = new Contexto();
