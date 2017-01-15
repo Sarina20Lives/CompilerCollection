@@ -11,16 +11,31 @@ namespace CompilerCollection.CompilerCollection.Interprete
 {
     class Interprete
     {
+
+        private static Interprete singleton = null;
+
+        public static Interprete GetInstance()
+        {
+            if (singleton == null)
+                singleton = new Interprete();
+            return singleton;
+        }
+
+        public static Interprete ResetInstance()
+        {
+            singleton = new Interprete();
+            return singleton;
+        }
+
         private int P;
         private int H;
-        private double [] Heap;
-        private double [] Stack;
-        private Dictionary<string, double> Temps;
-        private string salida;
+        private double[] Heap;
+        private double[] Stack;
+        private string Salida;
         private const Double NULL = -51233905.20302;
         private ParseTreeNode programa = null;
 
-        public Interprete()
+        private Interprete()
         {
             int i; this.P = 0; H = 0;
             Heap = new Double[10000];
@@ -31,8 +46,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
             i = 0;
             while (i < Stack.Length)
                 Stack[i++] = NULL;
-            salida = "";
-            Temps = new Dictionary<string, double>();
+            Salida = "";
         }
 
         public void EjecutarC3D()
@@ -60,7 +74,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
         private void Ejecutar(ParseTreeNode nodo, string titulo)
         {
             this.programa = nodo;
-            MessageBox.Show("Inicia la ejecución del código 3D.", titulo);
+            MessageBox.Show("Inicia la ejecución.", titulo);
             ParseTreeNode principal = null;
             foreach (var metodo in programa.ChildNodes)
             {
@@ -75,11 +89,11 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 MessageBox.Show("No existe ningún método principal.", titulo);
                 return;
             }
-            Ejecutar(principal);
-            MessageBox.Show("Salida:\n" + salida, titulo);
+            Ejecutar(principal, new Dictionary<string, double>());
+            MessageBox.Show("Salida:\n" + Salida, titulo);
         }
 
-        public void Ejecutar(ParseTreeNode metodo)
+        public void Ejecutar(ParseTreeNode metodo, Dictionary<string, double> temps)
         {
             ParseTreeNode cuerpo = metodo.ChildNodes[1];
             for (int i = 0; i < cuerpo.ChildNodes.Count; i++)
@@ -96,47 +110,47 @@ namespace CompilerCollection.CompilerCollection.Interprete
                         break;
                     case "acceso a stack":
                         //Ejecutar acceso a stack
-                        EjecutarAccesoStack(sentencia);
+                        EjecutarAccesoStack(sentencia, temps);
                         break;
                     case "asignación a stack":
                         //Ejecutar asigna a stack
-                        EjecutarAsignaStack(sentencia);
+                        EjecutarAsignaStack(sentencia, temps);
                         break;
                     case "acceso a heap":
                         //Ejecutar acceso a heap
-                        EjecutarAccesoHeap(sentencia);
+                        EjecutarAccesoHeap(sentencia, temps);
                         break;
                     case "asignación a heap":
                         //Ejecutar asigna a heap
-                        EjecutarAsignaHeap(sentencia);
+                        EjecutarAsignaHeap(sentencia, temps);
                         break;
                     case "suma":
                         //Ejecutar suma
-                        EjecutarAritmetica(sentencia, '+');
+                        EjecutarAritmetica(sentencia, temps, '+');
                         break;
                     case "resta":
                         //Ejecutar resta
-                        EjecutarAritmetica(sentencia, '-');
+                        EjecutarAritmetica(sentencia, temps, '-');
                         break;
                     case "multiplicación":
                         //Ejecutar multiplicación
-                        EjecutarAritmetica(sentencia, '*');
+                        EjecutarAritmetica(sentencia, temps, '*');
                         break;
                     case "división":
                         //Ejecutar división
-                        EjecutarAritmetica(sentencia, '/');
+                        EjecutarAritmetica(sentencia, temps, '/');
                         break;
                     case "módulo":
                         //Ejecutar módulo
-                        EjecutarAritmetica(sentencia, '%');
+                        EjecutarAritmetica(sentencia, temps, '%');
                         break;
                     case "potencia":
                         //Ejecutar potencia
-                        EjecutarAritmetica(sentencia, '^');
+                        EjecutarAritmetica(sentencia, temps, '^');
                         break;
                     case "asignación":
                         //Ejecutar asignación
-                        EjecutarAsignacion(sentencia);
+                        EjecutarAsignacion(sentencia, temps);
                         break;
                     case "salto":
                         //Ejecutar salto
@@ -144,31 +158,31 @@ namespace CompilerCollection.CompilerCollection.Interprete
                         break;
                     case "salto si igual":
                         //Ejecutar salto si igual
-                        i = EjecutarSaltoCondicional(sentencia, cuerpo, i, "==");
+                        i = EjecutarSaltoCondicional(sentencia, temps, cuerpo, i, "==");
                         break;
                     case "salto si diferente":
                         //Ejecutar salto si diferente
-                        i = EjecutarSaltoCondicional(sentencia, cuerpo, i, "!=");
+                        i = EjecutarSaltoCondicional(sentencia, temps, cuerpo, i, "!=");
                         break;
                     case "salto si mayor o igual":
                         //Ejecutar salto si mayor o igual
-                        i = EjecutarSaltoCondicional(sentencia, cuerpo, i, ">=");
+                        i = EjecutarSaltoCondicional(sentencia, temps, cuerpo, i, ">=");
                         break;
                     case "salto si menor o igual":
                         //Ejecutar salto si menor o igual
-                        i = EjecutarSaltoCondicional(sentencia, cuerpo, i, "<=");
+                        i = EjecutarSaltoCondicional(sentencia, temps, cuerpo, i, "<=");
                         break;
                     case "salto si mayor":
                         //Ejecutar salto si mayor
-                        i = EjecutarSaltoCondicional(sentencia, cuerpo, i, ">");
+                        i = EjecutarSaltoCondicional(sentencia, temps, cuerpo, i, ">");
                         break;
                     case "salto si menor":
                         //Ejecutar salto si menor
-                        i = EjecutarSaltoCondicional(sentencia, cuerpo, i, "<");
+                        i = EjecutarSaltoCondicional(sentencia, temps, cuerpo, i, "<");
                         break;
                     case "imprime":
                         //Ejecutar función para imprimir a la salida
-                        EjecutarImprime(sentencia);
+                        EjecutarImprime(sentencia, temps);
                         break;
                     case "nonsql":
                         //Ejecutar función nonsql
@@ -208,7 +222,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                     retorno = GetString((int)Stack[P + 1]).CompareTo(GetString((int)Stack[P + 2]));
                     break;
                 case "outString":
-                    salida += GetString((int)Stack[P + 0]);
+                    Salida += GetString((int)Stack[P + 0]);
                     break;
                 case "error":
                     //Error de ejecución controlado... código en Stack[P + 0]
@@ -243,28 +257,28 @@ namespace CompilerCollection.CompilerCollection.Interprete
             }
         }
 
-        private void EjecutarImprime(ParseTreeNode sentencia)
+        private void EjecutarImprime(ParseTreeNode sentencia, Dictionary<string, double> temps)
         {
             string formato = sentencia.ChildNodes[0].FindTokenAndGetText();
-            double valor = GetValor(sentencia.ChildNodes[1]);
+            double valor = GetValor(sentencia.ChildNodes[1], temps);
             switch (formato)
             {
                 case "\"%f\"":
-                    salida += valor;
+                    Salida += valor;
                     break;
                 case "\"%d\"":
-                    salida += (int)valor;
+                    Salida += (int)valor;
                     break;
                 case "\"%c\"":
-                    salida += (char)valor;
+                    Salida += (char)valor;
                     break;
             }
         }
 
-        private int EjecutarSaltoCondicional(ParseTreeNode sentencia, ParseTreeNode cuerpo, int i, string p)
+        private int EjecutarSaltoCondicional(ParseTreeNode sentencia, Dictionary<string, double> temps, ParseTreeNode cuerpo, int i, string p)
         {
-            double valIzq = GetValor(sentencia.ChildNodes[0]);
-            double valDer = GetValor(sentencia.ChildNodes[1]);
+            double valIzq = GetValor(sentencia.ChildNodes[0], temps);
+            double valDer = GetValor(sentencia.ChildNodes[1], temps);
             string etiqueta = sentencia.ChildNodes[2].FindTokenAndGetText();
             switch (p)
             {
@@ -302,16 +316,16 @@ namespace CompilerCollection.CompilerCollection.Interprete
             return BuscarEtiqueta(etiqueta, cuerpo);
         }
 
-        private void EjecutarAsignacion(ParseTreeNode sentencia)
+        private void EjecutarAsignacion(ParseTreeNode sentencia, Dictionary<string, double> temps)
         {
-            double valor = GetValor(sentencia.ChildNodes[1]);
-            SetValor(sentencia.ChildNodes[0], valor);
+            double valor = GetValor(sentencia.ChildNodes[1], temps);
+            SetValor(sentencia.ChildNodes[0], temps, valor);
         }
 
-        private void EjecutarAritmetica(ParseTreeNode sentencia, char p)
+        private void EjecutarAritmetica(ParseTreeNode sentencia, Dictionary<string, double> temps, char p)
         {
-            double valIzq = GetValor(sentencia.ChildNodes[1]);
-            double valDer = GetValor(sentencia.ChildNodes[2]);
+            double valIzq = GetValor(sentencia.ChildNodes[1], temps);
+            double valDer = GetValor(sentencia.ChildNodes[2], temps);
             switch (p)
             {
                 case '+':
@@ -326,40 +340,40 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 case '/':
                     valIzq /= valDer;
                     break;
-                case '%':              
+                case '%':
                     valIzq %= valDer;
                     break;
                 case '^':
                     valIzq = Math.Pow(valIzq, valDer);
                     break;
             }
-            SetValor(sentencia.ChildNodes[0], valIzq);
+            SetValor(sentencia.ChildNodes[0], temps, valIzq);
         }
 
-        private void EjecutarAsignaHeap(ParseTreeNode sentencia)
+        private void EjecutarAsignaHeap(ParseTreeNode sentencia, Dictionary<string, double> temps)
         {
-            int indice = (int)GetValor(sentencia.ChildNodes[0]);
-            double valor = GetValor(sentencia.ChildNodes[1]);
+            int indice = (int)GetValor(sentencia.ChildNodes[0], temps);
+            double valor = GetValor(sentencia.ChildNodes[1], temps);
             Heap[indice] = valor;
         }
 
-        private void EjecutarAccesoHeap(ParseTreeNode sentencia)
+        private void EjecutarAccesoHeap(ParseTreeNode sentencia, Dictionary<string, double> temps)
         {
-            int indice = (int)GetValor(sentencia.ChildNodes[1]);
-            SetValor(sentencia.ChildNodes[0], Heap[indice]);
+            int indice = (int)GetValor(sentencia.ChildNodes[1], temps);
+            SetValor(sentencia.ChildNodes[0], temps, Heap[indice]);
         }
 
-        private void EjecutarAsignaStack(ParseTreeNode sentencia)
+        private void EjecutarAsignaStack(ParseTreeNode sentencia, Dictionary<string, double> temps)
         {
-            int indice = (int)GetValor(sentencia.ChildNodes[0]);
-            double valor = GetValor(sentencia.ChildNodes[1]);
+            int indice = (int)GetValor(sentencia.ChildNodes[0], temps);
+            double valor = GetValor(sentencia.ChildNodes[1], temps);
             Stack[indice] = valor;
         }
 
-        private void EjecutarAccesoStack(ParseTreeNode sentencia)
+        private void EjecutarAccesoStack(ParseTreeNode sentencia, Dictionary<string, double> temps)
         {
-            int indice = (int)GetValor(sentencia.ChildNodes[1]);
-            SetValor(sentencia.ChildNodes[0], Stack[indice]);
+            int indice = (int)GetValor(sentencia.ChildNodes[1], temps);
+            SetValor(sentencia.ChildNodes[0], temps, Stack[indice]);
         }
 
         private void EjecutarLlamada(ParseTreeNode nodo)
@@ -371,18 +385,14 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 //Error(No existe el método... id)
                 return;
             }
-            Ejecutar(metodo);
+            Ejecutar(metodo, new Dictionary<string, double>());
         }
 
         private ParseTreeNode BuscarMetodo(string identificador)
         {
             foreach (var metodo in programa.ChildNodes)
-            {
                 if (metodo.ChildNodes[0].FindTokenAndGetText() == identificador)
-                {
                     return metodo;
-                }
-            }
             return null;
         }
 
@@ -399,13 +409,13 @@ namespace CompilerCollection.CompilerCollection.Interprete
             return i;
         }
 
-        private void SetValor(ParseTreeNode destino, double valor)
+        private void SetValor(ParseTreeNode destino, Dictionary<string, double> temps, double valor)
         {
             string tipoTerminal = destino.Term.ToString();
             switch (tipoTerminal)
             {
                 case "temporal":
-                    Temps[destino.FindTokenAndGetText()] = valor;
+                    temps[destino.FindTokenAndGetText()] = valor;
                     break;
                 case "H":
                     H = (int)valor;
@@ -416,14 +426,14 @@ namespace CompilerCollection.CompilerCollection.Interprete
             }
         }
 
-        private double GetValor(ParseTreeNode nodo)
+        private double GetValor(ParseTreeNode nodo, Dictionary<string, double> temps)
         {
             string tipoTerminal = nodo.Term.ToString();
             double valor = 0;
             switch (tipoTerminal)
             {
                 case "temporal":
-                    valor = Temps[nodo.FindTokenAndGetText()];
+                    valor = temps[nodo.FindTokenAndGetText()];
                     break;
                 case "entero":
                 case "decimal":
@@ -433,6 +443,8 @@ namespace CompilerCollection.CompilerCollection.Interprete
                     return H;
                 case "P":
                     return P;
+                case "NULL":
+                    return NULL;
             }
             return valor;
         }
@@ -455,7 +467,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
             return str;
         }
 
-        private int SetString(string str) 
+        private int SetString(string str)
         {
             int ptr = H;
             Heap[ptr] = ++H;
@@ -464,7 +476,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
             Heap[H++] = 0;
             return ptr;
         }
-        
+
         /**
          * STACK
          * | 0 | -> this
@@ -522,7 +534,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
             {
                 indiceAux += i;
                 columnas[i] = GetString((int)Stack[indiceAux]);
-                valores[i]  = GetString((int)Stack[indiceAux + noColumnas]);
+                valores[i] = GetString((int)Stack[indiceAux + noColumnas]);
             }
             CollectionNonSQL.insert(nombre, columnas, valores);
         }
@@ -581,7 +593,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
             for (int i = 0; i < nocolumnas; i++)
                 columnas[i] = GetString((int)Stack[paux + i]);
             string texto = CollectionNonSQL.select(nombre, columnas);
-            salida += "\n" + texto + "\n";
+            Salida += "\n" + texto + "\n";
         }
 
     }

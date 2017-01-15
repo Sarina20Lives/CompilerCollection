@@ -10,7 +10,8 @@ namespace CompilerCollection.CompilerCollection.Interprete
 {
     class GramaticaC3D : Grammar
     {
-        private const string RUTA_C3D = "C:\\FilesCompilerCollection\\c3d.txt";
+        public const string RUTA_C3D = "C:\\FilesCompilerCollection\\c3d.txt";
+        public const string RUTA_C3D_OPTIMIZADO = "C:\\FilesCompilerCollection\\c3d(optimizado).txt";
 
         public static ParseTreeNode AnalizarC3D()
         {
@@ -45,6 +46,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 _heap = ToTerm("Heap"),
                 _P = ToTerm("P"),
                 _H = ToTerm("H"),
+                _NULL = ToTerm("NULL"),
                 _printf = ToTerm("printf"),
                 _create = ToTerm("create"),
                 _select = ToTerm("select"),
@@ -281,6 +283,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 | _temp
                 | _H
                 | _P
+                | _NULL
             ;
 
             destino.Rule

@@ -12,7 +12,6 @@ using Irony.Parsing;
 using CompilerCollection.CompilerCollection.JCode;
 using CompilerCollection.CompilerCollection.Compilador;
 using CompilerCollection.CompilerCollection.Interprete;
-using CompilerCollection.CompilerCollection.C4P;
 
 namespace CompilerCollection
 {
@@ -23,47 +22,89 @@ namespace CompilerCollection
             InitializeComponent();
         }
 
-        private void bAnalizar_Click(object sender, EventArgs e)
+        private void btnNuevo_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnAbrir_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnGuardarComo_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCerrar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnGenerarC3D_Click(object sender, EventArgs e)
         {
             List<ClaseJCode> clases = ParserJcode.generarAst("ArchivoX", rtbEntrada.Text);
-            if (clases==null || clases.Count==0)
+            if (clases == null || clases.Count == 0)
             {
                 rtbConsola.Text = "La cadena es invalida";
                 return;
             }
-
             //Generación de tabla de símbolos
-            TablaSimbolo ts = new TablaSimbolo();
+            TablaSimbolo tablaSimbolos = new TablaSimbolo();
             Padre padre;
-            foreach (ClaseJCode clase in clases) {
+            foreach (ClaseJCode clase in clases)
+            {
                 padre = Padre.crearDeClase(clase.archivo, clase.clase);
-                ts.generar(padre, clase.clase);
+                tablaSimbolos.generar(padre, clase.clase);
             }
-            String resultado = ts.generarReporte();
-
-            rtbConsola.Text = "La cadena es valida\n";
+            String resultado = tablaSimbolos.generarReporte();
+            rtbConsola.Text = "La cadena es válida\n";
             rtbConsola.Text += resultado + "\n";
+        }
+
+        private void btnOptimizaC3D_Click(object sender, EventArgs e)
+        {
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnEjecutarC3D_Click(object sender, EventArgs e)
         {
-            Interprete interprete = new Interprete();
+            Interprete interprete = Interprete.ResetInstance();
             interprete.EjecutarC3D();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void btnGenerar4P_Click(object sender, EventArgs e)
         {
-            GeneradorC4P gen = new GeneradorC4P();
-            gen.GenerarCuadruplos();
+            Generador gen = new Generador(true);
+            gen.GenerarC3D();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnEjecutar4P_Click(object sender, EventArgs e)
         {
-            Interprete interprete = new Interprete();
+            Interprete interprete = Interprete.ResetInstance();
             interprete.EjecutarC4P();
         }
 
+        private void btnTablaSimbolos_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnLogError_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnAcercaDe_Click(object sender, EventArgs e)
+        {
+
+        }
 
     }
 }

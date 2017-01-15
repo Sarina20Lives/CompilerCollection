@@ -58,7 +58,6 @@
     <Compile Include="CompilerCollection.ACode\GrammarAcode.cs" />
     <Compile Include="CompilerCollection.ACode\ParserAcode.cs" />
     <Compile Include="CompilerCollection.C3D\C3d.cs" />
-    <Compile Include="CompilerCollection.C4P\GeneradorC4P.cs" />
     <Compile Include="CompilerCollection.Compilador\Compilador.cs" />
     <Compile Include="CompilerCollection.Compilador\Contexto.cs" />
     <Compile Include="CompilerCollection.Compilador\Dimension.cs" />
@@ -69,9 +68,11 @@
     <Compile Include="CompilerCollection.Compilador\TablaSimbolo.cs" />
     <Compile Include="CompilerCollection.General\Constantes.cs" />
     <Compile Include="CompilerCollection.Interprete\CollectionNonSQL.cs" />
+    <Compile Include="CompilerCollection.Interprete\Generador.cs" />
     <Compile Include="CompilerCollection.Interprete\GramaticaC3D.cs" />
     <Compile Include="CompilerCollection.Interprete\GramaticaC4P.cs" />
     <Compile Include="CompilerCollection.Interprete\Interprete.cs" />
+    <Compile Include="CompilerCollection.Interprete\Optimizador.cs" />
     <Compile Include="CompilerCollection.JCode\ClaseJCode.cs" />
     <Compile Include="CompilerCollection.JCode\ConstantesJC.cs" />
     <Compile Include="CompilerCollection.JCode\GrammarJcode.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -112,7 +114,63 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\icono_3D_ejecutar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_3D_generar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_3D_optimizar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_4P_ejecutar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_4P_generar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_eliminar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_error.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_folder_abrir.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_folder_eliminar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_folder_nuevo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_guardar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_guardarComo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_logerror.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_nuevo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_paleta.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icono_tabla.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\miniSOL.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SOL.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

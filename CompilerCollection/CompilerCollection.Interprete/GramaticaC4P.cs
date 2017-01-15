@@ -10,7 +10,8 @@ namespace CompilerCollection.CompilerCollection.Interprete
 {
     class GramaticaC4P : Grammar
     {
-        private const string RUTA_C4P = "C:\\FilesCompilerCollection\\cuadruplos.txt";
+        public const string RUTA_C4P = "C:\\FilesCompilerCollection\\cuadruplos.txt";
+        public const string RUTA_C4P_OPTIMIZADO = "C:\\FilesCompilerCollection\\cuadruplos(optimizado).txt";
 
         public static ParseTreeNode AnalizarC4P()
         {
@@ -167,6 +168,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 _heap = ToTerm("Heap"),
                 _P = ToTerm("P"),
                 _H = ToTerm("H"),
+                _NULL = ToTerm("NULL"),
                 _printf = ToTerm("printf"),
                 _create = ToTerm("create"),
                 _select = ToTerm("select"),
@@ -410,6 +412,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 | _temp
                 | _H
                 | _P
+                | _NULL
             ;
 
             destino.Rule
