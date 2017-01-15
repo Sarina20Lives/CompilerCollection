@@ -11,6 +11,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using CompilerCollection.CompilerCollection.JCode;
 using CompilerCollection.CompilerCollection.Compilador;
+using CompilerCollection.CompilerCollection.Interprete;
 
 namespace CompilerCollection
 {
@@ -42,6 +43,12 @@ namespace CompilerCollection
             rtbConsola.Text = "La cadena es valida\n";
             rtbConsola.Text += resultado + "\n";
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Interprete interprete = new Interprete();
+            interprete.Ejecutar();
         }
     }
 }

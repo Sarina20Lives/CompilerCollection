@@ -66,6 +66,8 @@
     <Compile Include="CompilerCollection.Compilador\Simbolo.cs" />
     <Compile Include="CompilerCollection.Compilador\TablaSimbolo.cs" />
     <Compile Include="CompilerCollection.General\Constantes.cs" />
+    <Compile Include="CompilerCollection.Interprete\GramaticaC3D.cs" />
+    <Compile Include="CompilerCollection.Interprete\Interprete.cs" />
     <Compile Include="CompilerCollection.JCode\ClaseJCode.cs" />
     <Compile Include="CompilerCollection.JCode\ConstantesJC.cs" />
     <Compile Include="CompilerCollection.JCode\GrammarJcode.cs" />
@@ -105,6 +107,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
