@@ -8,6 +8,7 @@ using Irony.Parsing;
 using CompilerCollection.CompilerCollection.JCode;
 using CompilerCollection.CompilerCollection.General;
 using CompilerCollection.CompilerCollection.Utilidades;
+using CompilerCollection.CompilerCollection.C3D;
 
 
 namespace CompilerCollection.CompilerCollection.Compilador
@@ -80,6 +81,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             simbolo.visibilidad = padre.visibilidad;
             simbolo.archivo = padre.archivo;
             simbolo.referencia = padre.nombre + "_" + simbolo.nombre;
+            simbolo.pos = 0;
             return simbolo;
         }
 
@@ -299,6 +301,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             }
             return false;
         }
+
 
         public String toHtml() {
             String html = "<tr>\n";

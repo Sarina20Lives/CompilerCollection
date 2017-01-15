@@ -246,6 +246,17 @@ namespace CompilerCollection.CompilerCollection.Compilador
             }
             return null;        
         }
-    
+
+        public static bool existeConstrutor(String nClase, String parametro){
+            foreach (Simbolo simbolo in simbolos) {
+                if (simbolo.rol.Equals(ConstantesJC.CONSTRUCTOR, StringComparison.OrdinalIgnoreCase) &&
+                    simbolo.nombre.Equals(nClase) && simbolo.parametros.Equals(parametro, StringComparison.OrdinalIgnoreCase) &&
+                    simbolo.padre.Equals(nClase))
+                {
+                    return true;
+                } 
+            }
+            return false;
+        }
     }
 }

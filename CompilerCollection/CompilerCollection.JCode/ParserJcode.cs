@@ -139,5 +139,22 @@ namespace CompilerCollection.CompilerCollection.JCode
             return null;
         }
 
+        public static ParseTreeNode obtenerInicializacion(ParseTreeNode raizClase)
+        {
+
+            foreach (ParseTreeNode hijo in raizClase.ChildNodes)
+            {
+                if (hijo.ToString().CompareTo(ConstantesJC.ASIGARR) == 0)
+                {
+                    return hijo;
+                }
+                if (hijo.ToString().CompareTo(ConstantesJC.ASIGVAR) == 0)
+                {
+                    return hijo;
+                }
+            }
+            return null;
+        }
+
     }
 }

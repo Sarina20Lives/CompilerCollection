@@ -71,14 +71,16 @@ namespace CompilerCollection.CompilerCollection.Compilador
             {
                 String nombre = clase.clase.ChildNodes.ElementAt(0).FindTokenAndGetText();
                 ambito = TablaSimbolo.buscarClase(clase.archivo, nombre);
+                ambito.tamanio = 2;
                 if (ambito == null)
                 {
                     ManejadorErrores.General("Comprueba la generación de tabla de símbolos, no se encontro la clase " + nombre + " en el archivo " + clase.archivo);
                     continue;
                 }
-                generadorc3d.limpiarInit();
+                //Escribir clase_init
+                generadorc3d.iniciarInit(ambito.nombre, ambito.tamanio);
                 ctxGlobal = Contexto.crearContextoGlobal(nombre);
-                generadorc3d.generar(ambito, ctxGlobal, ctxLocal, clase.clase);
+                generadorc3d.generar(ambito, ctxGlobal, ctxLocal, clase.clase, true);
             }
             return "Escritura de C3d finalizada \n";
         }

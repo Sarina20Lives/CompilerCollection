@@ -7,6 +7,8 @@ using Irony.Ast;
 using Irony.Parsing;
 using CompilerCollection.CompilerCollection.JCode;
 using CompilerCollection.CompilerCollection.Utilidades;
+using CompilerCollection.CompilerCollection.C3D;
+using CompilerCollection.CompilerCollection.General;
 
 namespace CompilerCollection.CompilerCollection.Compilador
 {
@@ -33,6 +35,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             this.nivel = this.nivel - 1;
         }
 
+        //Generación de contexto local inicial(cuando exitan parametros)
         public static Contexto generarContextoLocal(Simbolo ambito, ParseTreeNode parametros) {
             Padre padre = Padre.crear(ambito);
             Contexto ctx = new Contexto();
@@ -60,9 +63,11 @@ namespace CompilerCollection.CompilerCollection.Compilador
             return ctx;
         }
 
-        public void agregarAlContextoLocal(Simbolo ambito, ParseTreeNode declaracion)
+        //Declaraciones locales....
+        public void agregarAlContextoLocal(Simbolo ambito, ParseTreeNode declaracion, Contexto ctxG, bool esInit)
         {
             Padre padre = Padre.crear(ambito);
+            bool resultado = false;
             Simbolo simbolo = TablaSimbolo.getSimbolo(Simbolo.resolverDeclaracion(padre, declaracion, false));
             if (simbolo == null)
             {
@@ -73,16 +78,25 @@ namespace CompilerCollection.CompilerCollection.Compilador
             {
                 if (comprobarPermisoTipoObjeto(simbolo.tipo, padre.clase, padre.archivo))
                 {
-                    this.agregarVariable(ambito, simbolo, false);
+                    resultado = this.agregarVariable(ambito, simbolo, false);
+                    if (resultado) {
+                        iniciarObj(ambito, ctxG, this, simbolo, declaracion, false, esInit);
+                    }
                 }
             }
             else
             {
-                this.agregarVariable(ambito, simbolo, false);
+                resultado = this.agregarVariable(ambito, simbolo, false);
+                if (resultado)
+                {
+                    iniciarObj(ambito, ctxG, this, simbolo, declaracion, false, esInit);
+                }
             }
         }
 
 
+
+        //Declaraciones Globales...
         public static Contexto crearContextoGlobal(String clase)
         {
             Contexto ctx = new Contexto();
@@ -174,10 +188,12 @@ namespace CompilerCollection.CompilerCollection.Compilador
         }
 
 
-        
+
+        //Generación de contexto global para una clase recibida como ParseTreeNode raiz
         public static void generarContextoGlobal(Simbolo ambito, Contexto ctx, Padre padre, ParseTreeNode raiz, bool esInclude) 
         { 
             Simbolo simbolo;
+            bool resultado = false;
             foreach (ParseTreeNode hijo in raiz.ChildNodes)
             {
                 if (hijo.ToString().CompareTo(ConstantesJC.ELEMENTOS) == 0)
@@ -189,7 +205,8 @@ namespace CompilerCollection.CompilerCollection.Compilador
                             simbolo = TablaSimbolo.getSimbolo(Simbolo.resolverDeclaracion(padre, sentencia, true));
                             if (simbolo != null)
                             {
-                                ctx.agregarVariable(ambito, simbolo, esInclude);
+                                resultado = ctx.agregarVariable(ambito, simbolo, esInclude);
+
                             }
                         }
                     
@@ -200,12 +217,12 @@ namespace CompilerCollection.CompilerCollection.Compilador
 
         
 
-
-        private void agregarVariable(Simbolo ambito, Simbolo simbolo, bool EsInclude)
+        //Verificación y actualización de variables en la tabla de símbolos
+        private bool agregarVariable(Simbolo ambito, Simbolo simbolo, bool EsInclude)
         {
             if (EsInclude && simbolo.visibilidad.CompareTo("private") == 0)
             {
-                return;
+                return false;
             }
 
             if (EsInclude) {
@@ -218,12 +235,153 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 if (Simbolo.compararPorVariable(sim, simbolo))
                 {
                     ManejadorErrores.General("La variable " + simbolo.nombre + " no se ha agregado, debido a que ya existe una variable con ese nombre");
-                    return;
+                    return false;
                 }
             }
             this.simbolos.Add(simbolo);
+            return true;
         }
 
+        //Método que verifica si existe una instancia inicial y escribe su c3d respectivo...
+        public static void iniciarObj(Simbolo ambito, Contexto ctxG, Contexto ctxL, Simbolo obj, ParseTreeNode declaracion, bool esGlobal, bool esInit) {
+            if (declaracion.ChildNodes.ElementAt(0).ToString().CompareTo(ConstantesJC.DECLOCAL) == 0) {
+                iniciarObj(ambito, ctxG, ctxG, obj, declaracion.ChildNodes.ElementAt(0), esGlobal, esInit);
+            }
+
+            ParseTreeNode instancia = ParserJcode.obtenerInicializacion(declaracion);
+            if (instancia == null || instancia.ChildNodes.Count()==0) {
+                return;
+            }
+
+
+            //Resolver la asignacion
+            C3d solucion = new C3d();
+            if (instancia.ToString().CompareTo(ConstantesJC.ASIGVAR) == 0)
+            {
+                solucion = resolverAsigVar(ctxG, ctxL, ambito, obj, instancia, esInit);
+                if (solucion == null) {
+                    solucion = new C3d();
+                    solucion.cad = "NULL";
+                }
+            }
+            if (instancia.ToString().CompareTo(ConstantesJC.ASIGARR) == 0)
+            {
+                //solucion = resolverAsigArr();
+            }
+
+            //Obtener pos
+            String posicion = "";
+            if (esGlobal && obj.esGlobal)
+            {
+                String pthis = C3d.generarTemp();
+                C3d.escribirOperacion(pthis, "P", "+", "1", esInit);  //Pos del this
+                String vthis = C3d.leerDePila(pthis, esInit); //Valor del this
+                posicion = C3d.generarTemp();
+                C3d.escribirOperacion(posicion, vthis, "+", obj.pos.ToString(), esInit); //Pos real del objeto
+                C3d.escribirEnHeap(posicion, solucion.cad, esInit); //Guardar en el heap el valor actualizado en solucion.cad
+            }
+            else
+            {
+                posicion = C3d.generarTemp();
+                C3d.escribirOperacion(posicion, "P", "+", obj.pos.ToString(), esInit);
+                C3d.escribirEnPila(posicion, solucion.cad, esInit);
+            }
+        }
+
+
+
+
+
+
+
+
+        public static C3d resolverAsigVar(Contexto ctxG, Contexto ctxL, Simbolo ambito, Simbolo simbolo, ParseTreeNode instancia, bool esInit)
+        {
+            C3d solucion = new C3d();
+            Expresion expresion = null;
+
+            //null;_____________________________________________________________________________________________________
+            if (instancia.ChildNodes.Count == 1 && instancia.ChildNodes.ElementAt(0).Term.ToString().Equals("null", StringComparison.OrdinalIgnoreCase)) {
+                solucion.cad = "NULL";
+                return solucion;
+            }
+
+            //Expresion;________________________________________________________________________________________________
+            if (instancia.ChildNodes.ElementAt(0).ToString().CompareTo(ConstantesJC.EXPRESION) == 0)
+            {
+                expresion = new Expresion(ctxG, ctxL, ambito, esInit);
+                solucion = expresion.resolver(instancia.ChildNodes.ElementAt(0));
+                if (solucion == null)
+                {
+                    return null;
+                }
+                //(C3d op, int tipo, int tamanio, bool esInit)
+                solucion = C3d.castearA(solucion, simbolo.tipo, ambito.tamanio, esInit);
+                return solucion;
+            }
+
+            //New ID(parametros);_______________________________________________________________________________________
+            //Comprobar tipo objeto
+            if (!simbolo.esObjeto())
+            {
+                ManejadorErrores.General("La variable " + simbolo.nombre + " no es de tipo objeto, no se puede instanciar");
+                return null; 
+            }
+            //Comprobar que las clases sean las mismas
+            String nClase = instancia.ChildNodes.ElementAt(0).FindTokenAndGetText();
+            if (!simbolo.tipo.Equals(nClase, StringComparison.OrdinalIgnoreCase)) {
+                ManejadorErrores.General("No se hace referencia a la misma clase " + simbolo.tipo + "!="+ nClase);
+                return null;             
+            }
+            //Comprobar la existencia de la clase            
+            ClaseJCode clase = Compilador.obtenerClasePorNombre(nClase);
+            if (clase == null) {
+                ManejadorErrores.General("No existe una clase con nombre " + nClase);
+                return null;
+            }
+            //Comprobar que es un tipo de objeto permitido
+            if (!comprobarPermisoTipoObjeto(nClase, simbolo.tipo, simbolo.archivo)) {
+                ManejadorErrores.General("La clase " + nClase + " no es accesible desde la clase actual");
+                return null;
+            }
+            
+            String parametro = "";
+
+            if (instancia.ChildNodes.Count() == 2 && instancia.ChildNodes.ElementAt(1).ToString().Equals(ConstantesJC.EXPRESIONES)) {
+                String tax = C3d.generarTemp();
+                String tparam = C3d.generarTemp();
+                C3d.escribirOperacion(tax, "P", "+", ambito.tamanio.ToString(), esInit);
+                C3d valorParam;
+                int cont = 2;
+                foreach (ParseTreeNode exp in instancia.ChildNodes.ElementAt(1).ChildNodes) {
+                    expresion = new Expresion(ctxG, ctxL, ambito, esInit);
+                    valorParam = expresion.resolver(exp);
+                    C3d.escribirOperacion(tparam, tax, "+", cont.ToString(), esInit);
+                    if (valorParam == null || valorParam.tipo == Constantes.ERROR)
+                    {
+                        C3d.escribirEnPila(tparam, "NULL", esInit);
+                        parametro += "NULL_";
+                    }
+                    else {
+                        C3d.escribirEnPila(tparam, valorParam.cad, esInit);
+                        parametro += Constantes.TIPOS[valorParam.tipo] + "_";
+                    }
+                    cont++;
+                }            
+            }
+
+            if (TablaSimbolo.existeConstrutor(nClase, parametro)) {
+                C3d.aumentarP(ambito.tamanio.ToString(), esInit);
+                C3d.escribir(nClase + "_" + nClase + "_" + parametro + "();", esInit);
+                String tx = C3d.generarTemp();
+                C3d.escribirOperacion(tx, "P", "+", "0", esInit);
+                solucion.cad = C3d.leerDePila(tx, esInit);
+                C3d.disminuirP(ambito.tamanio.ToString(), esInit);
+                return solucion;
+            }
+
+            return null;
+        }
 
     }
 }

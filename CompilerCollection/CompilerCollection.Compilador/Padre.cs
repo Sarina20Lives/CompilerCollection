@@ -30,7 +30,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             if (simbolo.rol.CompareTo("Clase") == 0)
             {
                 padre.clase = padre.nombre;
-                padre.pos = 0;
+                padre.pos = 2; //Padre para un init
             }            
             return padre;
         }
@@ -94,6 +94,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             padre.visibilidad = anterior.visibilidad;
             padre.archivo = anterior.archivo;
             padre.clase = anterior.nombre;
+            padre.pos = 0;
             return padre;
         }
     }

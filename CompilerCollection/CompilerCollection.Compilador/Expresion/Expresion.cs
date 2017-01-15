@@ -10,29 +10,27 @@ using CompilerCollection.CompilerCollection.C3D;
 using CompilerCollection.CompilerCollection.General;
 using CompilerCollection.CompilerCollection.Utilidades;
 
-namespace CompilerCollection.CompilerCollection.Compilador.Expresion
+namespace CompilerCollection.CompilerCollection.Compilador
 {
     class Expresion
      {
-
-        public List<String> temporales = null;
         public Contexto ctxGlobal = null;
         public Contexto ctxLocal = null;
         public Simbolo ambito = null;
-
+        public bool esInit = false;
 
         public Expresion() {
-            this.temporales = new List<String>();
             this.ctxGlobal = new Contexto();
             this.ctxLocal = new Contexto();
             this.ambito = new Simbolo();
+            this.esInit = false;
         }
 
-        public Expresion(List<String> temps, Contexto ctxG, Contexto ctxL, Simbolo ambito) {
-            this.temporales = temps;
+        public Expresion(Contexto ctxG, Contexto ctxL, Simbolo ambito, bool esInit) {
             this.ctxGlobal = ctxG;
             this.ctxLocal = ctxL;
             this.ambito = ambito;
+            this.esInit = esInit;
         }
 
         public C3d resolver(ParseTreeNode expresion) {
@@ -86,7 +84,7 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
                     return op1;
                 }
 
-                op1 = C3d.verificarBoolean(op1);
+                op1 = C3d.verificarBoolean(op1, this.esInit);
                 String tempEtq = op1.etqV;
                 op1.etqV = op1.etqF;
                 op1.etqF = tempEtq;
@@ -100,19 +98,19 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
                 return op1;
             }
 
-            op1 = C3d.verificarBoolean(op1);
+            op1 = C3d.verificarBoolean(op1, this.esInit);
 
             //And
             if (expresion.ChildNodes.ElementAt(1).FindTokenAndGetText().CompareTo("&&") == 0)
             {
-                C3d.escribir(op1.etqV + ":");
+                C3d.escribir(op1.etqV + ":", this.esInit);
                 op2 = resolver(expresion.ChildNodes.ElementAt(2));
                 if (esError(op2) || op2.tipo != Constantes.T_BOOLEAN)
                 {
                     ManejadorErrores.Semantico("No se puede operar el tipo " + op2.tipo + " dentro de una operación relacional", expresion.FindToken().Location.Line, expresion.FindToken().Location.Column);
                     return op2;
                 }
-                op2 = C3d.verificarBoolean(op2);
+                op2 = C3d.verificarBoolean(op2, this.esInit);
                 resultado = new C3d();
                 resultado.tipo = Constantes.T_BOOLEAN;
                 resultado.etqV = op2.etqV;
@@ -123,14 +121,14 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
             //Or
             if (expresion.ChildNodes.ElementAt(1).FindTokenAndGetText().CompareTo("||") == 0)
             {
-                C3d.escribir(op1.etqF + ":");
+                C3d.escribir(op1.etqF + ":", this.esInit);
                 op2 = resolver(expresion.ChildNodes.ElementAt(2));
                 if (esError(op2) || op2.tipo != Constantes.T_BOOLEAN)
                 {
                     ManejadorErrores.Semantico("No se puede operar el tipo " + op2.tipo + " dentro de una operación relacional", expresion.FindToken().Location.Line, expresion.FindToken().Location.Column);
                     return op2;
                 }
-                op2 = C3d.verificarBoolean(op2);
+                op2 = C3d.verificarBoolean(op2, this.esInit);
                 resultado = new C3d();
                 resultado.tipo = Constantes.T_BOOLEAN;
                 resultado.etqV = C3d.addEtq(op1.etqV, op2.etqV);
@@ -140,22 +138,22 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
             //Xor
             if (expresion.ChildNodes.ElementAt(1).FindTokenAndGetText().CompareTo("??") == 0)
             {
-                C3d.escribir(op1.etqF + ":");
+                C3d.escribir(op1.etqF + ":", this.esInit);
                 op2 = resolver(expresion.ChildNodes.ElementAt(2));
                 if (esError(op2) || op2.tipo != Constantes.T_BOOLEAN)
                 {
                     ManejadorErrores.Semantico("No se puede operar el tipo " + op2.tipo + " dentro de una operación relacional", expresion.FindToken().Location.Line, expresion.FindToken().Location.Column);
                     return op2;
                 }
-                op2 = C3d.verificarBoolean(op2);
-                C3d.escribir(op1.etqV + ":");
+                op2 = C3d.verificarBoolean(op2, this.esInit);
+                C3d.escribir(op1.etqV + ":", this.esInit);
                 C3d op3 = resolver(expresion.ChildNodes.ElementAt(2));
                 if (esError(op3) || op3.tipo != Constantes.T_BOOLEAN)
                 {
                     ManejadorErrores.Semantico("No se puede operar el tipo " + op3.tipo + " dentro de una operación relacional", expresion.FindToken().Location.Line, expresion.FindToken().Location.Column);
                     return op3;
                 }
-                op3 = C3d.verificarBoolean(op3);
+                op3 = C3d.verificarBoolean(op3, this.esInit);
 
                 resultado = new C3d();
                 resultado.tipo = Constantes.T_BOOLEAN;
@@ -211,8 +209,8 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
                     resultado.tipo = Constantes.T_BOOLEAN;
                     resultado.etqV = C3d.generarEtq();
                     resultado.etqF = C3d.generarEtq();
-                    C3d.escribirSaltoCond(op1.cad, op, op2.cad, resultado.etqV);
-                    C3d.escribirSaltoIncond(resultado.etqF);
+                    C3d.escribirSaltoCond(op1.cad, op, op2.cad, resultado.etqV, this.esInit);
+                    C3d.escribirSaltoIncond(resultado.etqF, this.esInit);
                     if(op.CompareTo("==")==0)
                     {
                         compTipo = new C3d();
@@ -221,9 +219,9 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
                         compTipo.etqF = resultado.etqF;
 
                         //And con la comprobación de tipo
-                        C3d.escribir(resultado.etqV + ":");
-                        C3d.escribirSaltoCond(op1.tipo.ToString(), "==", op2.tipo.ToString(), compTipo.etqV);
-                        C3d.escribirSaltoIncond(compTipo.etqF);
+                        C3d.escribir(resultado.etqV + ":", this.esInit);
+                        C3d.escribirSaltoCond(op1.tipo.ToString(), "==", op2.tipo.ToString(), compTipo.etqV, this.esInit);
+                        C3d.escribirSaltoIncond(compTipo.etqF, this.esInit);
                         return compTipo;
                     }
                     if (op.CompareTo("!=") == 0)
@@ -234,48 +232,49 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
                         compTipo.etqF = C3d.generarEtq();
 
                         //Or con la comprobación de tipo
-                        C3d.escribir(resultado.etqF + ":");
-                        C3d.escribirSaltoCond(op1.tipo.ToString(), "!=", op2.tipo.ToString(), compTipo.etqV);
-                        C3d.escribirSaltoIncond(compTipo.etqF);
+                        C3d.escribir(resultado.etqF + ":", this.esInit);
+                        C3d.escribirSaltoCond(op1.tipo.ToString(), "!=", op2.tipo.ToString(), compTipo.etqV, this.esInit);
+                        C3d.escribirSaltoIncond(compTipo.etqF, this.esInit);
                         return compTipo;
                     }
                     return resultado;
                 }
 
             if (op1.tipo == Constantes.T_STRING && op2.tipo == Constantes.T_STRING) {
-               resultado = C3d.compararStrings(op1.cad, op2.cad, this.ambito.tamanio, "compareStr()", this.temporales);
+               resultado = new C3d();
+               resultado.cad = C3d.compararStrings(op1.cad, op2.cad, this.ambito.tamanio, "compareStr()", this.esInit);
                C3d temp = new C3d();
                temp.tipo = Constantes.T_BOOLEAN;
                temp.etqV = C3d.generarEtq();
                temp.etqF = C3d.generarEtq();
                if (op.CompareTo("<") == 0) {
-                   C3d.escribirSaltoCond(resultado.cad, "==", "-1", temp.etqV);
-                   C3d.escribirSaltoIncond(temp.etqF);
+                   C3d.escribirSaltoCond(resultado.cad, "==", "-1", temp.etqV,this.esInit);
+                   C3d.escribirSaltoIncond(temp.etqF, this.esInit);
                    return temp; 
                }
                if (op.CompareTo("<=") == 0) {
-                   C3d.escribirSaltoCond(resultado.cad, "<=", "0", temp.etqV);
-                   C3d.escribirSaltoIncond(temp.etqF);
+                   C3d.escribirSaltoCond(resultado.cad, "<=", "0", temp.etqV, this.esInit);
+                   C3d.escribirSaltoIncond(temp.etqF, this.esInit);
                    return temp;
                }
                if (op.CompareTo(">") == 0) {
-                   C3d.escribirSaltoCond(resultado.cad, "==", "1", temp.etqV);
-                   C3d.escribirSaltoIncond(temp.etqF);
+                   C3d.escribirSaltoCond(resultado.cad, "==", "1", temp.etqV, this.esInit);
+                   C3d.escribirSaltoIncond(temp.etqF, this.esInit);
                    return temp;
                }
                if (op.CompareTo(">=") == 0) {
-                   C3d.escribirSaltoCond(resultado.cad, ">=", "0", temp.etqV);
-                   C3d.escribirSaltoIncond(temp.etqF);
+                   C3d.escribirSaltoCond(resultado.cad, ">=", "0", temp.etqV, this.esInit);
+                   C3d.escribirSaltoIncond(temp.etqF, this.esInit);
                    return temp;
                }
                if (op.CompareTo("==") == 0) {
-                   C3d.escribirSaltoCond(resultado.cad, "==", "0", temp.etqV);
-                   C3d.escribirSaltoIncond(temp.etqF);
+                   C3d.escribirSaltoCond(resultado.cad, "==", "0", temp.etqV, this.esInit);
+                   C3d.escribirSaltoIncond(temp.etqF, this.esInit);
                    return temp;
                }
                if (op.CompareTo("!=") == 0) {
-                   C3d.escribirSaltoCond(resultado.cad, "==", "0", temp.etqV);
-                   C3d.escribirSaltoIncond(temp.etqF);
+                   C3d.escribirSaltoCond(resultado.cad, "==", "0", temp.etqV, this.esInit);
+                   C3d.escribirSaltoIncond(temp.etqF, this.esInit);
                    String tempEtq = temp.etqV;
                    temp.etqV = temp.etqF;
                    temp.etqF = tempEtq;
@@ -386,82 +385,82 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
         public C3d resolverSuma(C3d op1, C3d op2, int tipo) {
             op1 = castearA(op1, tipo);
             op2 = castearA(op2, tipo);
-            C3d resultado = new C3d(this.temporales, tipo);
+            C3d resultado = new C3d(tipo);
             //Concatenar
             if (tipo == Constantes.T_STRING)
             {
-                resultado = C3d.concatenar(op1.cad, op2.cad, this.temporales);
+                resultado = C3d.concatenar(op1.cad, op2.cad, this.esInit);
                 return resultado;
             }
             //Resolver Or
             if (tipo == Constantes.T_BOOLEAN)
             {
-                C3d.escribirAsignacion(resultado.cad, "0");
+                C3d.escribirAsignacion(resultado.cad, "0", this.esInit);
                 String etqV = C3d.generarEtq();
                 String etqF1 = C3d.generarEtq();
                 String etqF2 = C3d.generarEtq();
-                C3d.escribirSaltoCond(op1.getCad(this.temporales), "==", "1", etqV);
-                C3d.escribirSaltoIncond(etqF1);
-                C3d.escribir(etqF1 + ":");
-                C3d.escribirSaltoCond(op2.getCad(this.temporales), "==", "1", etqV);
-                C3d.escribirSaltoIncond(etqF2);
-                C3d.escribir(etqV + ":");
-                C3d.escribirAsignacion(resultado.cad, "1");
-                C3d.escribir(etqF2 + ":");
+                C3d.escribirSaltoCond(op1.cad, "==", "1", etqV, this.esInit);
+                C3d.escribirSaltoIncond(etqF1, this.esInit);
+                C3d.escribir(etqF1 + ":", this.esInit);
+                C3d.escribirSaltoCond(op2.cad, "==", "1", etqV, this.esInit);
+                C3d.escribirSaltoIncond(etqF2, this.esInit);
+                C3d.escribir(etqV + ":", this.esInit);
+                C3d.escribirAsignacion(resultado.cad, "1", this.esInit);
+                C3d.escribir(etqF2 + ":", this.esInit);
                 return resultado;
             }
             //Resolver operacion
-            C3d.escribirOperacion(resultado.cad, op1.getCad(this.temporales), "+", op2.getCad(this.temporales));
+            C3d.escribirOperacion(resultado.cad, op1.cad, "+", op2.cad, this.esInit);
             return resultado;
         }
 
         public C3d resolverResta(C3d op1, C3d op2, int tipo) {
             op1 = castearA(op1, tipo);
             op2 = castearA(op2, tipo);
-            C3d resultado = new C3d(this.temporales, tipo);
-            C3d.escribirOperacion(resultado.cad, op1.getCad(this.temporales), "-", op2.getCad(this.temporales));
+            C3d resultado = new C3d(tipo);
+            C3d.escribirOperacion(resultado.cad, op1.cad, "-", op2.cad, this.esInit);
             return resultado;
         }
 
         public C3d resolverMultiplicacion(C3d op1, C3d op2, int tipo) {
             op1 = castearA(op1, tipo);
             op2 = castearA(op2, tipo);
-            C3d resultado = new C3d(this.temporales, tipo);
+            C3d resultado = new C3d( tipo);
             if (tipo == Constantes.T_BOOLEAN)
             {
                 //Resolver And
-                C3d.escribirAsignacion(resultado.cad, "0");
+                C3d.escribirAsignacion(resultado.cad, "0", this.esInit);
                 String etqF = C3d.generarEtq();
                 String etqV1 = C3d.generarEtq();
                 String etqV2 = C3d.generarEtq();
-                C3d.escribirSaltoCond(op1.getCad(this.temporales), "==", "1", etqV1);
-                C3d.escribirSaltoIncond(etqF);
-                C3d.escribir(etqV1 + ":");
-                C3d.escribirSaltoCond(op2.getCad(this.temporales), "==", "1", etqV2);
-                C3d.escribirSaltoIncond(etqF);
-                C3d.escribir(etqV2 + ":");
-                C3d.escribirAsignacion(resultado.cad, "1");
-                C3d.escribir(etqF + ":");
+                C3d.escribirSaltoCond(op1.cad, "==", "1", etqV1, this.esInit);
+                C3d.escribirSaltoIncond(etqF, this.esInit);
+                C3d.escribir(etqV1 + ":", this.esInit);
+                C3d.escribirSaltoCond(op2.cad, "==", "1", etqV2, this.esInit);
+                C3d.escribirSaltoIncond(etqF, this.esInit);
+                C3d.escribir(etqV2 + ":", this.esInit);
+                C3d.escribirAsignacion(resultado.cad, "1", this.esInit);
+                C3d.escribir(etqF + ":", this.esInit);
                 return resultado;
             }
-            C3d.escribirOperacion(resultado.cad, op1.getCad(this.temporales), "-", op2.getCad(this.temporales));
+            C3d.escribirOperacion(resultado.cad, op1.cad, "*", op2.cad, this.esInit);
             return resultado;
         }
 
         public C3d resolverDivision(C3d op1, C3d op2, int tipo) {
             op1 = castearA(op1, tipo);
             op2 = castearA(op2, tipo);
-            C3d resultado = new C3d(this.temporales, tipo);
+            C3d resultado = new C3d( tipo);
             //Controlar el error de división entre cero
-            C3d.escribirAsignacion(resultado.cad, "0");
+            C3d.escribirAsignacion(resultado.cad, "0", this.esInit);
             String etqV = C3d.generarEtq();
             String etqF = C3d.generarEtq();
-            C3d.escribirSaltoCond(op2.getCad(this.temporales), "==", "0", etqV);
-            C3d.escribirOperacion(resultado.cad, op1.getCad(this.temporales), "/", op2.cad);
-            C3d.escribirSaltoIncond(etqF);
-            C3d.escribir(etqV + ":");
-            C3d.generarError(Constantes.ERROR_DIV_CERO, this.ambito.tamanio);
-            C3d.escribir(etqF + ":");
+            C3d.escribirSaltoCond(op2.cad, "==", "0", etqV, this.esInit);
+            C3d.escribirOperacion(resultado.cad, op1.cad, "/", op2.cad, this.esInit);
+            C3d.escribirSaltoIncond(etqF, this.esInit);
+            C3d.escribir(etqV + ":", this.esInit);
+            C3d.generarError(Constantes.ERROR_DIV_CERO, this.ambito.tamanio, this.esInit);
+            C3d.escribir(etqF + ":", this.esInit);
             return resultado;        
         }
 
@@ -469,25 +468,25 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
         {
             op1 = castearA(op1, tipo);
             op2 = castearA(op2, tipo);
-            C3d resultado = new C3d(this.temporales, tipo);
+            C3d resultado = new C3d( tipo);
             //Controlar el error de división entre cero
-            C3d.escribirAsignacion(resultado.cad, "0");
+            C3d.escribirAsignacion(resultado.cad, "0", this.esInit);
             String etqV = C3d.generarEtq();
             String etqF = C3d.generarEtq();
-            C3d.escribirSaltoCond(op2.getCad(this.temporales), "==", "0", etqV);
-            C3d.escribirOperacion(resultado.cad, op1.getCad(this.temporales), "%", op2.cad);
-            C3d.escribirSaltoIncond(etqF);
-            C3d.escribir(etqV + ":");
-            C3d.generarError(Constantes.ERROR_MOD_CERO, this.ambito.tamanio);
-            C3d.escribir(etqF + ":");
+            C3d.escribirSaltoCond(op2.cad, "==", "0", etqV, this.esInit);
+            C3d.escribirOperacion(resultado.cad, op1.cad, "%", op2.cad, this.esInit);
+            C3d.escribirSaltoIncond(etqF, this.esInit);
+            C3d.escribir(etqV + ":", this.esInit);
+            C3d.generarError(Constantes.ERROR_MOD_CERO, this.ambito.tamanio, this.esInit);
+            C3d.escribir(etqF + ":", this.esInit);
             return resultado;
         }
 
         public C3d resolverPotencia(C3d op1, C3d op2, int tipo) {
             op1 = castearA(op1, tipo);
             op2 = castearA(op2, tipo);
-            C3d resultado = new C3d(this.temporales, tipo);
-            C3d.escribirOperacion(resultado.cad, op1.getCad(this.temporales), "^", op2.getCad(this.temporales));
+            C3d resultado = new C3d( tipo);
+            C3d.escribirOperacion(resultado.cad, op1.cad, "^", op2.cad, this.esInit);
             return resultado;           
         }
 
@@ -591,45 +590,49 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
             if(expresion.ToString().CompareTo(ConstantesJC.NEGATIVO)==0){
                 if (expresion.ChildNodes.ElementAt(1).Term.ToString().CompareTo("int") == 0)
                 {
-                    resultado = C3d.crearNegativo(true, this.temporales, expresion.ChildNodes.ElementAt(1).FindTokenAndGetText());
+                    resultado = C3d.crearNegativo(true, expresion.FindTokenAndGetText(), this.esInit);
                     return resultado;
                 }
-                resultado = C3d.crearNegativo(false, this.temporales, expresion.ChildNodes.ElementAt(1).FindTokenAndGetText());
+                resultado = C3d.crearNegativo(false, expresion.FindTokenAndGetText(), this.esInit);
                 return resultado;
             }
             
             //Int
             if (expresion.Term.ToString().CompareTo("int") == 0)
             {
-                resultado = C3d.crearInt(expresion.ChildNodes.ElementAt(0).FindTokenAndGetText());
+                resultado = C3d.crearInt(expresion.FindTokenAndGetText());
                 return resultado;
             }
             
             //Double
             if (expresion.Term.ToString().CompareTo("double") == 0)
             {
-                resultado = C3d.crearDouble(expresion.ChildNodes.ElementAt(0).FindTokenAndGetText());
+                resultado = C3d.crearDouble(expresion.FindTokenAndGetText());
                 return resultado;
             }
             
             //Char
             if (expresion.Term.ToString().CompareTo("char") == 0)
             {
-                resultado = C3d.crearChar(expresion.ChildNodes.ElementAt(0).FindTokenAndGetText());
+                String str = expresion.FindTokenAndGetText();
+                //Reemplazar
+                resultado = C3d.crearChar(str.Substring(1, str.Length - 2));
                 return resultado;
             }
             
             //String
             if (expresion.Term.ToString().CompareTo("string") == 0)
             {
-                resultado = C3d.crearChar(expresion.ChildNodes.ElementAt(0).FindTokenAndGetText());
+                String str = expresion.FindTokenAndGetText();
+                resultado = C3d.crearString(str.Substring(1, str.Length -2), this.esInit);
                 return resultado;
             }
 
             //Boolean
             if (expresion.FindTokenAndGetText().Equals("true", StringComparison.OrdinalIgnoreCase) || expresion.FindTokenAndGetText().Equals("false", StringComparison.OrdinalIgnoreCase))
             {
-                resultado = C3d.crearBoolean(expresion.FindTokenAndGetText());       
+                resultado = C3d.crearBoolean(expresion.FindTokenAndGetText());
+                return resultado;
             }
 
             return new C3d();
@@ -687,19 +690,31 @@ namespace CompilerCollection.CompilerCollection.Compilador.Expresion
             {
                 if (op.tipo == Constantes.T_INT)
                 {
-                    return C3d.casteo(op.cad, this.ambito.tamanio, "intToStr()", this.temporales);
+                    casteo = new C3d(Constantes.T_STRING);
+                    casteo.cad = C3d.casteo(op.cad, this.ambito.tamanio, "intToStr()", this.esInit);
+                    casteo.esTemp = true;
+                    return casteo;
                 }
                 if (op.tipo == Constantes.T_DOUBLE)
                 {
-                    return C3d.casteo(op.cad, this.ambito.tamanio, "doubleToStr()", this.temporales);
+                    casteo = new C3d(Constantes.T_STRING);
+                    casteo.cad = C3d.casteo(op.cad, this.ambito.tamanio, "doubleToStr()", this.esInit);
+                    casteo.esTemp = true;
+                    return casteo;
                 }
                 if (op.tipo == Constantes.T_CHAR)
                 {
-                    return C3d.casteo(op.cad, this.ambito.tamanio, "charToStr()", this.temporales);
+                    casteo = new C3d(Constantes.T_STRING);
+                    casteo.cad = C3d.casteo(op.cad, this.ambito.tamanio, "charToStr()", this.esInit);
+                    casteo.esTemp = true;
+                    return casteo;
                 }
             }
-            return casteo;
+            return null;
         }
+
+
+
 
     }
 }
