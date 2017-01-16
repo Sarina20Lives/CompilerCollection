@@ -505,7 +505,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
          * | 1 | -> return
          * | 2 | -> PTR al nombre de la colección
          */
-        public void drop()
+        private void drop()
         {
             string nombre = GetString((int)Stack[P + 2]);
             CollectionNonSQL.drop(nombre);
@@ -523,7 +523,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
          * | x | -> PTR a la n-ésima columna
          * | y | -> PTR al n-ésimo valor
          */
-        public void insert()
+        private void insert()
         {
             string nombre = GetString((int)Stack[P + 2]);
             int noColumnas = (int)Stack[P + 3];
@@ -547,7 +547,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
          * | 3 | -> PTR al nombre de la columna
          * | 4 | -> PTR al valor para borrar
          */
-        public void delete()
+        private void delete()
         {
             string nombre = GetString((int)Stack[P + 2]);
             string columna = GetString((int)Stack[P + 3]);
@@ -564,7 +564,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
          * | 4 | -> PTR al valor para actualiza
          * | 5 | -> PTR al valor nuevo
          */
-        public void update()
+        private void update()
         {
             string nombre = GetString((int)Stack[P + 2]);
             string columna = GetString((int)Stack[P + 3]);
@@ -584,7 +584,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
          * |...| -> ...
          * | x | -> PTR a la n-ésima columna
          */
-        public void select()
+        private void select()
         {
             string nombre = GetString((int)Stack[P + 2]);
             int nocolumnas = (int)Stack[P + 3];
@@ -594,6 +594,11 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 columnas[i] = GetString((int)Stack[paux + i]);
             string texto = CollectionNonSQL.select(nombre, columnas);
             Salida += "\n" + texto + "\n";
+        }
+
+        public string GetSalida()
+        {
+            return Salida;
         }
 
     }

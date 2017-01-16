@@ -50,9 +50,21 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.dataLogOptimizacion = new System.Windows.Forms.DataGridView();
+            this.labelLogOptimizacion = new System.Windows.Forms.Label();
+            this.No = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Regla = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Codigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Optimizado = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Ambito = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.textSalida = new System.Windows.Forms.TextBox();
             this.toolAcciones.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataLogOptimizacion)).BeginInit();
             this.SuspendLayout();
             // 
             // rtbEntrada
@@ -286,6 +298,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(0, 55);
             this.tabControl1.Multiline = true;
             this.tabControl1.Name = "tabControl1";
@@ -303,17 +316,104 @@
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(892, 391);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Pruebas";
+            this.tabPage1.Text = "Área de edición";
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.textSalida);
             this.tabPage2.Location = new System.Drawing.Point(4, 4);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(892, 391);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.Text = "Consola";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.dataLogOptimizacion);
+            this.tabPage3.Controls.Add(this.labelLogOptimizacion);
+            this.tabPage3.Location = new System.Drawing.Point(4, 4);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(892, 391);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Log optimización";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // dataLogOptimizacion
+            // 
+            this.dataLogOptimizacion.AllowUserToAddRows = false;
+            this.dataLogOptimizacion.AllowUserToDeleteRows = false;
+            this.dataLogOptimizacion.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataLogOptimizacion.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.No,
+            this.Regla,
+            this.Codigo,
+            this.Optimizado,
+            this.Ambito});
+            this.dataLogOptimizacion.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataLogOptimizacion.Location = new System.Drawing.Point(3, 39);
+            this.dataLogOptimizacion.Name = "dataLogOptimizacion";
+            this.dataLogOptimizacion.ReadOnly = true;
+            this.dataLogOptimizacion.Size = new System.Drawing.Size(886, 349);
+            this.dataLogOptimizacion.TabIndex = 1;
+            // 
+            // labelLogOptimizacion
+            // 
+            this.labelLogOptimizacion.AutoSize = true;
+            this.labelLogOptimizacion.Dock = System.Windows.Forms.DockStyle.Top;
+            this.labelLogOptimizacion.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelLogOptimizacion.Location = new System.Drawing.Point(3, 3);
+            this.labelLogOptimizacion.Name = "labelLogOptimizacion";
+            this.labelLogOptimizacion.Size = new System.Drawing.Size(245, 36);
+            this.labelLogOptimizacion.TabIndex = 0;
+            this.labelLogOptimizacion.Text = "No hay optimizaciones por mostrar.\r\n\r\n";
+            // 
+            // No
+            // 
+            this.No.Frozen = true;
+            this.No.HeaderText = "No.";
+            this.No.Name = "No";
+            this.No.ReadOnly = true;
+            // 
+            // Regla
+            // 
+            this.Regla.Frozen = true;
+            this.Regla.HeaderText = "Regla";
+            this.Regla.Name = "Regla";
+            this.Regla.ReadOnly = true;
+            // 
+            // Codigo
+            // 
+            this.Codigo.HeaderText = "Código original";
+            this.Codigo.Name = "Codigo";
+            this.Codigo.ReadOnly = true;
+            this.Codigo.Width = 120;
+            // 
+            // Optimizado
+            // 
+            this.Optimizado.HeaderText = "Código optimizado";
+            this.Optimizado.Name = "Optimizado";
+            this.Optimizado.ReadOnly = true;
+            this.Optimizado.Width = 120;
+            // 
+            // Ambito
+            // 
+            this.Ambito.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Ambito.HeaderText = "Ámbito (método)";
+            this.Ambito.Name = "Ambito";
+            this.Ambito.ReadOnly = true;
+            // 
+            // textSalida
+            // 
+            this.textSalida.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textSalida.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textSalida.Location = new System.Drawing.Point(3, 3);
+            this.textSalida.Multiline = true;
+            this.textSalida.Name = "textSalida";
+            this.textSalida.Size = new System.Drawing.Size(886, 385);
+            this.textSalida.TabIndex = 0;
             // 
             // Form1
             // 
@@ -329,6 +429,11 @@
             this.toolAcciones.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataLogOptimizacion)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -358,6 +463,15 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.DataGridView dataLogOptimizacion;
+        private System.Windows.Forms.Label labelLogOptimizacion;
+        private System.Windows.Forms.DataGridViewTextBoxColumn No;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Regla;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Codigo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Optimizado;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Ambito;
+        private System.Windows.Forms.TextBox textSalida;
     }
 }
 

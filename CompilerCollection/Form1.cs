@@ -75,13 +75,22 @@ namespace CompilerCollection
 
         private void btnOptimizaC3D_Click(object sender, EventArgs e)
         {
-
+            Optimizador opt = new Optimizador();
+            opt.OptimizarC3D();
+            labelLogOptimizacion.Text = opt.GetReporte();
+            int i = 1;
+            foreach (var log in opt.GetLog())
+            {
+                dataLogOptimizacion.Rows.Add(log.GetData(i++));
+            }
+            tabControl1.SelectedIndex = 2;
         }
 
         private void btnEjecutarC3D_Click(object sender, EventArgs e)
         {
             Interprete interprete = Interprete.ResetInstance();
             interprete.EjecutarC3D();
+            textSalida.Text = String.Format("Salida generada: {0}\r\n\r\n{1}", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"), interprete.GetSalida().Replace("\n","\r\n"));
         }
 
         private void btnGenerar4P_Click(object sender, EventArgs e)
@@ -110,6 +119,7 @@ namespace CompilerCollection
         {
 
         }
+
 
     }
 }
