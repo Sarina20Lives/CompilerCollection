@@ -135,7 +135,6 @@ namespace CompilerCollection.CompilerCollection.C3D
             escribirEnHeap(c3d.cad, "H", esInit);
 
             //Escribir la cadena
-            int i;
             String temp;
             foreach (var caracter in valor)
             {
@@ -330,11 +329,16 @@ namespace CompilerCollection.CompilerCollection.C3D
         {
             Utilidades.ManejadorArchivo.escribirC3d(cadena + "\n", esInit);
         }
-
-
+        public static void escribirComentario(String cadena, bool esInit)
+        {
+            Utilidades.ManejadorArchivo.escribirC3d("\n//"+cadena + "\n", esInit);
+        }
 
         public static C3d castearA(C3d op, String tipo, int tamanio, bool esInit)
         {
+            if (op.tipo == Constantes.ERROR) {
+                return null;
+            }
             if (tipo.Equals(Constantes.TIPOS[op.tipo], StringComparison.OrdinalIgnoreCase))
             {
                 return op;

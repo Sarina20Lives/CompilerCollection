@@ -579,12 +579,20 @@ namespace CompilerCollection.CompilerCollection.Compilador
 
         public C3d resolverOperando(ParseTreeNode expresion)
         {
+            
+
             //(expresion) || {expresion}
             if (expresion.ToString().CompareTo(ConstantesJC.EXPRESION) == 0) {
                 return resolver(expresion);
             }
 
             C3d resultado;
+
+            //Objeto
+            if (expresion.ToString().CompareTo(ConstantesJC.GETOBJ) == 0) {
+                resultado = getValObjeto(expresion);
+                return resultado;
+            }
 
             //Negativos
             if(expresion.ToString().CompareTo(ConstantesJC.NEGATIVO)==0){
@@ -635,6 +643,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 return resultado;
             }
 
+            
             return new C3d();
         }
 
@@ -714,7 +723,83 @@ namespace CompilerCollection.CompilerCollection.Compilador
         }
 
 
+        public C3d getValObjeto(ParseTreeNode raiz) {
+            Simbolo obj;
+            String nObj = "";
+            C3d resultado;
+            if (raiz.ChildNodes.Count() == 2 && getSubObjEsVacio(raiz.ChildNodes.ElementAt(1))) { 
+                //id
+                nObj = raiz.ChildNodes.ElementAt(0).FindTokenAndGetText();
+                obj = GeneradorC3d.buscarObj(this.ctxLocal, nObj);
+                if (obj == null) {
+                    obj = GeneradorC3d.buscarObj(this.ctxGlobal, nObj);
+                }
+                if (obj == null) {
+                    ManejadorErrores.Semantico("No existe la variable a la cual se hace referencia", raiz.ChildNodes.ElementAt(0).Token.Location.Line, raiz.ChildNodes.ElementAt(0).Token.Location.Column);
+                    return new C3d();
+                }
+                resultado = new C3d();
+                resultado.tipo = Constantes.obtenerTipo(obj.tipo);
+                resultado.esArr = obj.esArr;
+                String temp1, temp2 = "";
+                if (obj.esGlobal) {
+                    C3d.escribirComentario("Obteniendo valor de una variable global", this.esInit);
+                    temp1 = C3d.generarTemp();
+                    C3d.escribirComentario("Accediendo al this", this.esInit);
+                    C3d.escribirOperacion(temp1, "P", "+", "1", this.esInit);
+                    temp2 = C3d.leerDePila(temp1, this.esInit);
+                    temp1 = C3d.generarTemp();
+                    C3d.escribirComentario("Obteniendo su valor", this.esInit);
+                    C3d.escribirOperacion(temp1, temp2, "+", obj.pos.ToString(), this.esInit);
+                    resultado.cad = C3d.leerDeHeap(temp1, this.esInit);
+                    return resultado;
+                }
+                C3d.escribirComentario("Obteniendo valor de una variable local", this.esInit);
+                temp1 = C3d.generarTemp();
+                C3d.escribirOperacion(temp1, "P", "+", obj.pos.ToString(), this.esInit);
+                resultado.cad = C3d.leerDePila(temp1, this.esInit);
+                return resultado;
+            }
+            if (raiz.ChildNodes.Count() == 3 && raiz.ChildNodes.ElementAt(0).FindTokenAndGetText().Equals("this",StringComparison.OrdinalIgnoreCase)
+                && getSubObjEsVacio(raiz.ChildNodes.ElementAt(2)))
+            {
+                //this.id
+                nObj = raiz.ChildNodes.ElementAt(1).FindTokenAndGetText();
+                obj = GeneradorC3d.buscarObj(this.ctxGlobal, nObj);
+                if (obj == null)
+                {
+                    ManejadorErrores.Semantico("No existe la variable a la cual se hace referencia", raiz.ChildNodes.ElementAt(1).Token.Location.Line, raiz.ChildNodes.ElementAt(1).Token.Location.Column);
+                    return new C3d();
+                }
+                resultado = new C3d();
+                resultado.tipo = Constantes.obtenerTipo(obj.tipo);
+                resultado.esArr = obj.esArr;
+                String temp1, temp2 = "";
+                C3d.escribirComentario("Obteniendo valor de una variable global", this.esInit);
+                temp1 = C3d.generarTemp();
+                C3d.escribirComentario("Accediendo al this", this.esInit);
+                C3d.escribirOperacion(temp1, "P", "+", "1", this.esInit);
+                temp2 = C3d.leerDePila(temp1, this.esInit);
+                temp1 = C3d.generarTemp();
+                C3d.escribirComentario("Obteniendo su valor", this.esInit);
+                C3d.escribirOperacion(temp1, temp2, "+", obj.pos.ToString(), this.esInit);
+                resultado.cad = C3d.leerDeHeap(temp1, this.esInit);
+                return resultado;
+            }
+            return new C3d();
+        }
 
+        public static bool getSubObjEsVacio(ParseTreeNode getSubObj){
+            if(getSubObj.ChildNodes.Count()==0){
+                return true;
+            }
+            if (getSubObj.ChildNodes.Count() == 1 && getSubObj.ChildNodes.ElementAt(0).ChildNodes.Count() == 0) {
+                return true;
+            }
+            return false;
+
+
+        }
 
     }
 }
