@@ -14,8 +14,8 @@ namespace CompilerCollection.CompilerCollection.Compilador
 {
     class Contexto
     {
-        private List<Simbolo> simbolos = new List<Simbolo>();
-        private int nivel = 0;
+        public List<Simbolo> simbolos = new List<Simbolo>();
+        public int nivel = 0;
 
         public void aumentarNivel() 
         {
@@ -93,8 +93,6 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 }
             }
         }
-
-
 
         //Declaraciones Globales...
         public static Contexto crearContextoGlobal(String clase)
@@ -273,15 +271,19 @@ namespace CompilerCollection.CompilerCollection.Compilador
             String posicion = "";
             if (esGlobal && obj.esGlobal)
             {
+                C3d.escribirComentario("Iniciando variable global", esInit);
+                C3d.escribirComentario("Accediendo al this", esInit);
                 String pthis = C3d.generarTemp();
                 C3d.escribirOperacion(pthis, "P", "+", "1", esInit);  //Pos del this
                 String vthis = C3d.leerDePila(pthis, esInit); //Valor del this
                 posicion = C3d.generarTemp();
+                C3d.escribirComentario("Moviendo a posicion y asignando valor en el heap", esInit);
                 C3d.escribirOperacion(posicion, vthis, "+", obj.pos.ToString(), esInit); //Pos real del objeto
                 C3d.escribirEnHeap(posicion, solucion.cad, esInit); //Guardar en el heap el valor actualizado en solucion.cad
             }
             else
             {
+                C3d.escribirComentario("Iniciando variable local", esInit);
                 posicion = C3d.generarTemp();
                 C3d.escribirOperacion(posicion, "P", "+", obj.pos.ToString(), esInit);
                 C3d.escribirEnPila(posicion, solucion.cad, esInit);

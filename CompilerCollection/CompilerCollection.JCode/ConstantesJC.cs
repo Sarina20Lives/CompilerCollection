@@ -16,6 +16,7 @@ namespace CompilerCollection.CompilerCollection.JCode
         public static String DECLOCAL = "decLocal";
         public static String VISIBILIDAD = "visibilidad";
         public static String CORCHETES = "corchetes";
+        public static String ACCESOS = "accesos";
         public static String ASIGVAR = "asigVariable";
         public static String ASIGARR = "asigMatriz";
         public static String CORCHETE = "{}";
@@ -33,6 +34,9 @@ namespace CompilerCollection.CompilerCollection.JCode
         public static String PRINCIPAL = "principal";
         public static String ELEMENTOS = "elementos";
         public static String SENTENCIAS = "sentencias";
+        public static String ASIGNACION = "asignacion";
+        public static String GETOBJ = "getObjeto";
+        public static String LLAMADA = "llamada";
        
     }
 }

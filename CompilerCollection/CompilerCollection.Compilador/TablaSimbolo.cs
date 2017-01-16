@@ -7,6 +7,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using CompilerCollection.CompilerCollection.JCode;
 using CompilerCollection.CompilerCollection.Utilidades;
+using CompilerCollection.CompilerCollection.General;
 
 namespace CompilerCollection.CompilerCollection.Compilador
 {
@@ -257,6 +258,16 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 } 
             }
             return false;
+        }
+
+        public static Simbolo buscarObj(String padre, String nombre) {
+            foreach (Simbolo simbolo in simbolos) {
+                if (simbolo.rol.Equals(Constantes.ROL_VAR) && simbolo.esGlobal && !simbolo.visibilidad.Equals("private", StringComparison.OrdinalIgnoreCase)
+                    && simbolo.padre.Equals(padre, StringComparison.OrdinalIgnoreCase) && simbolo.nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase)) {
+                        return simbolo;                
+                }
+            }
+            return null;
         }
     }
 }
