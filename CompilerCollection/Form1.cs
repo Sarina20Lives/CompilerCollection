@@ -24,14 +24,39 @@ namespace CompilerCollection
             InitializeComponent();
         }
 
-        private void bAnalizar_Click(object sender, EventArgs e)
+        private void btnNuevo_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnAbrir_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnGuardarComo_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCerrar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnGenerarC3D_Click(object sender, EventArgs e)
         {
             //Iniciar registro de errores
             ManejadorErrores.Iniciar();
             
             //Iniciar análisis
             List<ClaseJCode> clases = ParserJcode.generarAst("ArchivoX", rtbEntrada.Text);
-            if (clases==null || clases.Count==0)
+            if (clases == null || clases.Count == 0)
             {
                 rtbConsola.Text = "La cadena es invalida\n";
                 return;
@@ -46,18 +71,45 @@ namespace CompilerCollection
                 return;
             }
             rtbConsola.Text += Compilador.generarC3d() + "\n";
-           
-
-
-
-
-
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnOptimizaC3D_Click(object sender, EventArgs e)
         {
-            Interprete interprete = new Interprete();
-            interprete.Ejecutar();
+
         }
+
+        private void btnEjecutarC3D_Click(object sender, EventArgs e)
+        {
+            Interprete interprete = Interprete.ResetInstance();
+            interprete.EjecutarC3D();
+        }
+
+        private void btnGenerar4P_Click(object sender, EventArgs e)
+        {
+            Generador gen = new Generador(true);
+            gen.GenerarC3D();
+        }
+
+        private void btnEjecutar4P_Click(object sender, EventArgs e)
+        {
+            Interprete interprete = Interprete.ResetInstance();
+            interprete.EjecutarC4P();
+        }
+
+        private void btnTablaSimbolos_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnLogError_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnAcercaDe_Click(object sender, EventArgs e)
+        {
+
+        }
+
     }
 }

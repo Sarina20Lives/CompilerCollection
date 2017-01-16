@@ -135,7 +135,6 @@ namespace CompilerCollection.CompilerCollection.C3D
             escribirEnHeap(c3d.cad, "H", esInit);
 
             //Escribir la cadena
-            int i;
             String temp;
             foreach (var caracter in valor)
             {

@@ -1,6 +1,7 @@
 ﻿using Irony.Parsing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,9 +10,24 @@ namespace CompilerCollection.CompilerCollection.Interprete
 {
     class GramaticaC3D : Grammar
     {
+        public const string RUTA_C3D = "C:\\FilesCompilerCollection\\c3d.txt";
+        public const string RUTA_C3D_OPTIMIZADO = "C:\\FilesCompilerCollection\\c3d(optimizado).txt";
+
+        public static ParseTreeNode AnalizarC3D()
+        {
+            string c3d = File.ReadAllText(RUTA_C3D);
+            GramaticaC3D gramatica = new GramaticaC3D();
+            LanguageData lenguaje = new LanguageData(gramatica);
+            Parser parser = new Parser(lenguaje);
+            ParseTree arbol = parser.Parse(c3d);
+            return arbol.Root;
+        }
+
         public GramaticaC3D()
             : base(caseSensitive: false)
         {
+
+            #region Terminales
             IdentifierTerminal 
                 _id = new IdentifierTerminal("id", "$_");
 
@@ -30,6 +46,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 _heap = ToTerm("Heap"),
                 _P = ToTerm("P"),
                 _H = ToTerm("H"),
+                _NULL = ToTerm("NULL"),
                 _printf = ToTerm("printf"),
                 _create = ToTerm("create"),
                 _select = ToTerm("select"),
@@ -65,7 +82,9 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 _fc = ToTerm("\"%c\""),
                 _fd = ToTerm("\"%d\""),
                 _ff = ToTerm("\"%f\"");
-            
+            #endregion
+
+            #region No Terminales
             NonTerminal
                 programa = new NonTerminal("programa"),
                 elemento = new NonTerminal("elemento"),
@@ -77,9 +96,9 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 etiqueta = new NonTerminal("etiqueta"),
                 llamada = new NonTerminal("llamada"),
                 acceso_stack = new NonTerminal("acceso a stack"),
-                asigna_stack = new NonTerminal("asigna a stack"),
+                asigna_stack = new NonTerminal("asignación a stack"),
                 acceso_heap = new NonTerminal("acceso a heap"),
-                asigna_heap = new NonTerminal("asigna a heap"),
+                asigna_heap = new NonTerminal("asignación a heap"),
                 suma = new NonTerminal("suma"),
                 resta = new NonTerminal("resta"),
                 multi = new NonTerminal("multiplicación"),
@@ -101,7 +120,9 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 valor = new NonTerminal("valor"),
                 destino = new NonTerminal("destino"),
                 formatos = new NonTerminal("formatos");
+            #endregion
 
+            #region Gramática
             programa.Rule
                 = MakeStarRule(programa, elemento)
             ;
@@ -113,6 +134,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
 
             metodo.Rule
                 = _void + _id + "(" + ")" + "{" + cuerpo + "}"
+                
             ;
 
             main.Rule
@@ -261,22 +283,26 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 | _temp
                 | _H
                 | _P
+                | _NULL
             ;
 
             destino.Rule
                 = _temp
                 | _H
-                | _P 
+                | _P
             ;
+            #endregion
 
+            #region Personalización
             CommentTerminal _comentario = new CommentTerminal("comentario", "//", "\n");
             NonGrammarTerminals.Add(_comentario);
             this.Root = programa;
             MarkPunctuation(";", ",", ":", "(", ")", "[", "]", "{", "}", "=");
             MarkPunctuation(_mas, _men, _por, _div, _mod, _pot);
             MarkPunctuation(_equ, _dif, _gte, _lte, _gt, _lt);
-            MarkPunctuation(_void, _goto);
+            MarkPunctuation(_void, _goto, _if, _printf, _stack, _heap);
             MarkTransient(elemento, formatos, valor, destino, sentencia);
+            #endregion
 
         }
     }
