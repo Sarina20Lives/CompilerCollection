@@ -70,6 +70,11 @@ namespace CompilerCollection
             }
             reiniciarConsola();
             TabFile tab = (TabFile)tabArchivos.SelectedTab;
+            if (tab.Path != null)
+            {
+                string path = tab.Path;
+                ManejadorArchivo.RUTA_IMPORTS = path.Substring(0, path.LastIndexOf("\\") + 1);
+            }
 
             //Iniciar registro de errores
             ManejadorErrores.Iniciar();

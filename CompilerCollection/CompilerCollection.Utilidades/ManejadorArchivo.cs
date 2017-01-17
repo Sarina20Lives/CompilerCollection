@@ -13,6 +13,7 @@ namespace CompilerCollection.CompilerCollection.Utilidades
     {
 
         private static String RUTA_RAIZ = "C:\\FilesCompilerCollection\\";
+        public static String RUTA_IMPORTS = "C:\\FilesCompilerCollection\\";
 
         public static void agregarInit() {
             String fileC3d = RUTA_RAIZ + "c3d.txt";
@@ -45,7 +46,7 @@ namespace CompilerCollection.CompilerCollection.Utilidades
         }
 
         public static String buscarContenidoArchivoImport(String nombre){
-            String file = RUTA_RAIZ + nombre + ".jc";
+            String file = RUTA_IMPORTS + nombre + ".jc";
             String contenido="";
             try
             {
