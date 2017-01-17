@@ -1058,6 +1058,13 @@ namespace CompilerCollection.CompilerCollection.C3D
 
         public void resolverIf(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
         {
+            ctxL.aumentarNivel();
+            Expresion cond = new Expresion(ctxG, ctxL, ambito, false);
+
+
+
+
+            ctxL.limpiarNivel();
         }
 
         public void resolverIfNot(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)

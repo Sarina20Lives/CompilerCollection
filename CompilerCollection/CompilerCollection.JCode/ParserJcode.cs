@@ -170,5 +170,21 @@ namespace CompilerCollection.CompilerCollection.JCode
             return null;
         }
 
+
+
+        public static ParseTreeNode obtenerOtrosIf(ParseTreeNode raizClase)
+        {
+
+            foreach (ParseTreeNode hijo in raizClase.ChildNodes)
+            {
+                if (hijo.ToString().CompareTo(ConstantesJC.OTROSIF) == 0)
+                {
+                    return hijo;
+                }
+            }
+            return null;
+        }
+
+
     }
 }

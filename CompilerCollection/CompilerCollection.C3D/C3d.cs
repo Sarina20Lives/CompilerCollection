@@ -247,7 +247,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             escribirOperacion(temp2, temp1, "+", "1", esInit);
             escribirEnPila(temp2, cad, esInit);
             aumentarP(tamanio.ToString(), esInit);
-            escribir(funcion, esInit);
+            escribir(funcion + ";", esInit);
             String temp3 = generarTemp();
             escribirOperacion(temp3, "P", "+", "0", esInit);
             String casteo = leerDePila(temp3, esInit);
@@ -276,7 +276,7 @@ namespace CompilerCollection.CompilerCollection.C3D
 
         public static void escribirSaltoCond(String op1, String op, String op2, String etq, bool esInit)
         {
-            escribir("if " + op1 + op + op2 + " goto " + etq + ";",esInit);
+            escribir("if (" + op1 + op + op2 + ") goto " + etq + ";",esInit);
         }
         public static void escribirSaltoIncond(String etq, bool esInit)
         {
