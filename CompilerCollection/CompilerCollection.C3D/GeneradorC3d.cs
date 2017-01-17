@@ -153,6 +153,60 @@ namespace CompilerCollection.CompilerCollection.C3D
                 return;
             }
 
+            if (raiz.ToString().CompareTo(ConstantesJC.SWITCH) == 0)
+            {
+                resolverSwitch(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+            
+            if (raiz.ToString().CompareTo(ConstantesJC.FOR) == 0)
+            {
+                resolverFor(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+            
+            if (raiz.ToString().CompareTo(ConstantesJC.FORPARIMPAR) == 0)
+            {
+                resolverForParImpar(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+            
+            if (raiz.ToString().CompareTo(ConstantesJC.LOOP) == 0)
+            {
+                resolverLoop(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+
+            if (raiz.ToString().CompareTo(ConstantesJC.PARSEINT) == 0)
+            {
+                resolverParseInt(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+            
+            if (raiz.ToString().CompareTo(ConstantesJC.PARSEDOUBLE) == 0)
+            {
+                resolverParseDouble(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+            
+            if (raiz.ToString().CompareTo(ConstantesJC.INTTOSTR) == 0)
+            {
+                resolverIntToStr(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+            
+            if (raiz.ToString().CompareTo(ConstantesJC.DOUBLETOSTR) == 0)
+            {
+                resolverDoubleToStr(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+
+            if (raiz.ToString().CompareTo(ConstantesJC.DOUBLETOINT) == 0)
+            {
+                resolverDoubleToInt(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+
             if (raiz.Token != null  && raiz.FindTokenAndGetText().Equals(ConstantesJC.BREAK, StringComparison.OrdinalIgnoreCase))
             {
                 resolverEscape(false, raiz.Token.Location.Line, raiz.Token.Location.Column);
@@ -1048,7 +1102,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             }
             C3d.escribirSaltoIncond(etq, false);        
         }
-
+ 
         public void resolverIf(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
         {
             ctxL.aumentarNivel();
@@ -1205,19 +1259,198 @@ namespace CompilerCollection.CompilerCollection.C3D
             C3d.escribir(Compilador.Compilador.getEtqSalida(false) + ":", false);
             ctxL.limpiarNivel();
             Compilador.Compilador.eliminarEtqsSalida();
-
         }
 
         public void resolverDoWhile(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
         {
+            ctxL.aumentarNivel();
+            Compilador.Compilador.generarEtqsSalida();
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            //Linicio:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(true) + ":", false);
+            
+            //Verificar y resolver sentencias si existen
+            ParseTreeNode sentencias = ParserJcode.obtenerSentencias(raiz);
+            if (sentencias != null && sentencias.ChildNodes.Count() > 0)
+            {
+                generar(ambito, ctxG, ctxL, sentencias, false);
+            }
+
+            //Generar condicion
+            C3d condicion = exp.resolver(raiz.ChildNodes.ElementAt(1));
+            condicion = C3d.castearA(condicion, "bool", ambito.tamanio, false);
+            if (condicion == null)
+            {
+                ManejadorErrores.General("Se esperaba un tipo bool para la condición del if");
+                ctxL.limpiarNivel();
+                Compilador.Compilador.eliminarEtqsSalida();
+                return;
+            }
+            C3d.verificarBoolean(condicion, false);
+            //Lv:
+            C3d.escribir(condicion.etqV + ":", false);
+            //goto Linicio:
+            C3d.escribirSaltoIncond(Compilador.Compilador.getEtqSalida(true), false);
+            //Lf:
+            C3d.escribir(condicion.etqF + ":", false);
+            //Lfin:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(false) + ":", false);
+            ctxL.limpiarNivel();
+            Compilador.Compilador.eliminarEtqsSalida();
+
         }
 
         public void resolverWhilex(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
         {
+            ctxL.aumentarNivel();
+            Compilador.Compilador.generarEtqsSalida();
+            
+            String tx = C3d.generarTemp();
+            String etqCuerpo = C3d.generarEtq();
+            String etqCond2 = C3d.generarEtq();
+
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            //tx = 1;
+            C3d.escribirAsignacion(tx, "1", false);
+            //Linicio:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(true) + ":", false);
+
+            //Condicion1:
+            C3d condicion = exp.resolver(raiz.ChildNodes.ElementAt(1));
+            condicion = C3d.castearA(condicion, "bool", ambito.tamanio, false);
+            if (condicion == null)
+            {
+                ManejadorErrores.General("Se esperaba un tipo bool para la condición del if");
+                ctxL.limpiarNivel();
+                Compilador.Compilador.eliminarEtqsSalida();
+                return;
+            }
+            C3d.verificarBoolean(condicion, false);
+            //Lv:
+            C3d.escribir(condicion.etqV + ":", false);
+            C3d.escribirSaltoCond(tx, "==", "1", etqCuerpo, false);
+            C3d.escribirSaltoIncond(etqCond2, false);
+            //Lf:
+            C3d.escribir(condicion.etqF + ":", false);
+            C3d.escribirSaltoCond(tx, "==", "1", etqCond2, false);
+            C3d.escribirSaltoIncond(Compilador.Compilador.getEtqSalida(false), false);
+
+            //LCond2:
+            C3d.escribir(etqCond2 + ":", false);
+
+            //Condicion2:
+            condicion = exp.resolver(raiz.ChildNodes.ElementAt(2));
+            condicion = C3d.castearA(condicion, "bool", ambito.tamanio, false);
+            if (condicion == null)
+            {
+                ManejadorErrores.General("Se esperaba un tipo bool para la condición del if");
+                ctxL.limpiarNivel();
+                Compilador.Compilador.eliminarEtqsSalida();
+                return;
+            }
+            C3d.verificarBoolean(condicion, false);
+            //Lv:
+            C3d.escribir(condicion.etqV + ":", false);
+            C3d.escribirSaltoIncond(etqCuerpo, false);
+            //Lf:
+            C3d.escribir(condicion.etqF + ":", false);
+            C3d.escribirSaltoIncond(Compilador.Compilador.getEtqSalida(false), false);
+
+            //Lcuerpo:
+            C3d.escribir(etqCuerpo + ":", false);
+            C3d.escribirAsignacion(tx, "0", false);
+
+            //Verificar y resolver sentencias si existen
+            ParseTreeNode sentencias = ParserJcode.obtenerSentencias(raiz);
+            if (sentencias != null && sentencias.ChildNodes.Count() > 0)
+            {
+                generar(ambito, ctxG, ctxL, sentencias, false);
+            }
+
+            //goto Linicio;
+            C3d.escribirSaltoIncond(Compilador.Compilador.getEtqSalida(true), false);
+
+            //Lfin:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(false) + ":", false);
+            ctxL.limpiarNivel();
+            Compilador.Compilador.eliminarEtqsSalida();
+        }
+
+        public void resolverSwitch(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            //TODO:FALTA IMPLEMENTAR
+        }
+
+        public void resolverFor(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            //TODO:FALTA IMPLEMENTAR
+        }
+
+        public void resolverForParImpar(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            //TODO:FALTA IMPLEMENTAR
+        }
+
+        public void resolverVariacion(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            //TODO:FALTA IMPLEMENTAR
+        }
+
+        public void resolverLoop(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            ctxL.aumentarNivel();
+            Compilador.Compilador.generarEtqsSalida();
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            //Linicio:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(true) + ":", false);
+            //Verificar y resolver sentencias si existen
+            ParseTreeNode sentencias = ParserJcode.obtenerSentencias(raiz);
+            if (sentencias != null && sentencias.ChildNodes.Count() > 0)
+            {
+                generar(ambito, ctxG, ctxL, sentencias, false);
+            }
+            //Lfin:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(false) + ":", false);
+            ctxL.limpiarNivel();
+            Compilador.Compilador.eliminarEtqsSalida();
         }
 
         public void resolverRepeat(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
         {
+            ctxL.aumentarNivel();
+            Compilador.Compilador.generarEtqsSalida();
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            //Linicio:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(true) + ":", false);
+
+            //Verificar y resolver sentencias si existen
+            ParseTreeNode sentencias = ParserJcode.obtenerSentencias(raiz);
+            if (sentencias != null && sentencias.ChildNodes.Count() > 0)
+            {
+                generar(ambito, ctxG, ctxL, sentencias, false);
+            }
+
+            //Generar condicion
+            C3d condicion = exp.resolver(raiz.ChildNodes.ElementAt(1));
+            condicion = C3d.castearA(condicion, "bool", ambito.tamanio, false);
+            if (condicion == null)
+            {
+                ManejadorErrores.General("Se esperaba un tipo bool para la condición del if");
+                ctxL.limpiarNivel();
+                Compilador.Compilador.eliminarEtqsSalida();
+                return;
+            }
+            C3d.verificarBoolean(condicion, false);
+            //Lf:
+            C3d.escribir(condicion.etqF + ":", false);
+            //goto Linicio:
+            C3d.escribirSaltoIncond(Compilador.Compilador.getEtqSalida(true), false);
+            //Lv:
+            C3d.escribir(condicion.etqV + ":", false);
+            //Lfin:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(false) + ":", false);
+            ctxL.limpiarNivel();
+            Compilador.Compilador.eliminarEtqsSalida();
         }
 
         public void resolverOutString(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
@@ -1250,6 +1483,86 @@ namespace CompilerCollection.CompilerCollection.C3D
             }
             C3d.escribir("printf(\"%d\"," + resultado.cad + ");", false);
         }
+
+        public static C3d resolverParseInt(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            C3d resultado = exp.resolver(raiz.ChildNodes.ElementAt(0));
+            resultado = C3d.castearA(resultado, "int", ambito.tamanio, false);
+            if (resultado == null) {
+                ManejadorErrores.General("No es posible hacer el casteo a int para la expresion dada " + ambito.padre + "-" + ambito.nombre);
+                return null;
+            }
+            return resultado;
+        }
+
+        public static C3d resolverParseDouble(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            C3d resultado = exp.resolver(raiz.ChildNodes.ElementAt(0));
+            resultado = C3d.castearA(resultado, "double", ambito.tamanio, false);
+            if (resultado == null)
+            {
+                ManejadorErrores.General("No es posible hacer el casteo a double para la expresion dada " + ambito.padre + "-" + ambito.nombre);
+                return null;
+            }
+            return resultado;
+        }
+   
+        public static C3d resolverIntToStr(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            C3d resultado = exp.resolver(raiz.ChildNodes.ElementAt(0));
+            if (resultado.tipo!=Constantes.T_INT) {
+                ManejadorErrores.General("La expresión no corresponde a un valor int " + ambito.padre + "-" + ambito.nombre);
+                return null;
+            } 
+            resultado = C3d.castearA(resultado, "string", ambito.tamanio, false);
+            if (resultado == null)
+            {
+                ManejadorErrores.General("No es posible hacer el casteo a string para la expresion dada " + ambito.padre + "-" + ambito.nombre);
+                return null;
+            }
+            return resultado;
+        }
+
+        public static C3d resolverDoubleToStr(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            C3d resultado = exp.resolver(raiz.ChildNodes.ElementAt(0));
+            if (resultado.tipo != Constantes.T_DOUBLE)
+            {
+                ManejadorErrores.General("La expresión no corresponde a un valor double " + ambito.padre + "-" + ambito.nombre);
+                return null;
+            }
+            resultado = C3d.castearA(resultado, "string", ambito.tamanio, false);
+            if (resultado == null)
+            {
+                ManejadorErrores.General("No es posible hacer el casteo a string para la expresion dada " + ambito.padre + "-" + ambito.nombre);
+                return null;
+            }
+            return resultado;
+        }
+
+        public static C3d resolverDoubleToInt(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            C3d resultado = exp.resolver(raiz.ChildNodes.ElementAt(0));
+            if (resultado.tipo != Constantes.T_DOUBLE)
+            {
+                ManejadorErrores.General("La expresión no corresponde a un valor double " + ambito.padre + "-" + ambito.nombre);
+                return null;
+            }
+            resultado = C3d.castearA(resultado, "int", ambito.tamanio, false);
+            if (resultado == null)
+            {
+                ManejadorErrores.General("No es posible hacer el casteo a int para la expresion dada " + ambito.padre + "-" + ambito.nombre);
+                return null;
+            }
+            return resultado;
+        }
+
+
 
     }
 }

@@ -93,8 +93,8 @@ namespace CompilerCollection.CompilerCollection.JCode
             var _from = ToTerm("from");
             var _outstring = ToTerm("out_string");
             var _outint = ToTerm("out_int");
-            var _parseint = ToTerm("ParseInt");
-            var _parsedouble = ToTerm("ParseDouble");
+            var _parseint = ToTerm("parseInt");
+            var _parsedouble = ToTerm("parseDouble");
             var _inttostr = ToTerm("intToStr");
             var _doubletostr = ToTerm("doubleToStr");
             var _doubletoint = ToTerm("doubleToInt");

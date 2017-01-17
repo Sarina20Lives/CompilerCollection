@@ -60,5 +60,12 @@ namespace CompilerCollection.CompilerCollection.JCode
         public static String ELSEIF = "elseIf";
         public static String ELSE = "else";
 
+        public static String PARSEINT = "parseInt";
+        public static String PARSEDOUBLE = "parseDouble";
+        public static String INTTOSTR = "intToStr";
+        public static String DOUBLETOSTR = "doubleToStr";
+        public static String DOUBLETOINT = "doubleToInt";
+
+
     }
 }
