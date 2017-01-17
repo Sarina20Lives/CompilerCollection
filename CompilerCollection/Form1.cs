@@ -71,6 +71,7 @@ namespace CompilerCollection
                 return;
             }
             rtbConsola.Text += Compilador.generarC3d()+"\n";
+            ManejadorArchivo.agregarInit();
             if (ManejadorErrores.ExistenErrores())
             {
                 ManejadorErrores.GenerarReporte();
