@@ -269,5 +269,36 @@ namespace CompilerCollection.CompilerCollection.Compilador
             }
             return null;
         }
+
+        public static Simbolo buscarObj(Contexto ctx, String nombre)
+        {
+            foreach (Simbolo simbolo in ctx.simbolos)
+            {
+                if (simbolo.nombre.CompareTo(nombre) == 0)
+                {
+                    return simbolo;
+                }
+            }
+            return null;
+        }
+
+
+        public static Simbolo buscarMetodo(String clase, String nombre, String parametros, bool esExterno){
+            foreach (Simbolo simbolo in simbolos)
+            {
+                if (simbolo.rol.Equals("Metodo") &&
+                    simbolo.padre.Equals(clase, StringComparison.OrdinalIgnoreCase) &&
+                    simbolo.nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase) &&
+                    simbolo.parametros.Equals(parametros, StringComparison.OrdinalIgnoreCase))
+                {
+                    if(esExterno && simbolo.visibilidad.Equals("Private", StringComparison.OrdinalIgnoreCase)){
+                        return null;
+                    }
+                    return simbolo;
+                }
+            }
+            return null;
+        }
     }
 }
+

@@ -139,6 +139,20 @@ namespace CompilerCollection.CompilerCollection.JCode
             return null;
         }
 
+        public static ParseTreeNode obtenerExpresiones(ParseTreeNode raizClase)
+        {
+
+            foreach (ParseTreeNode hijo in raizClase.ChildNodes)
+            {
+                if (hijo.ToString().CompareTo(ConstantesJC.EXPRESIONES) == 0)
+                {
+                    return hijo;
+                }
+            }
+            return null;
+        }
+
+        
         public static ParseTreeNode obtenerInicializacion(ParseTreeNode raizClase)
         {
 

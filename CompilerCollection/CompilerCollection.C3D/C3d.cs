@@ -13,6 +13,7 @@ namespace CompilerCollection.CompilerCollection.C3D
     {
         public String cad = "";
         public int tipo = Constantes.ERROR;
+        public String ntipo = "";
         public bool esArr = false;
         public bool esTemp = false;
         public String etqV = "";
@@ -331,7 +332,7 @@ namespace CompilerCollection.CompilerCollection.C3D
         }
         public static void escribirComentario(String cadena, bool esInit)
         {
-            Utilidades.ManejadorArchivo.escribirC3d("\n//"+cadena + "\n", esInit);
+            Utilidades.ManejadorArchivo.escribirC3d("// "+cadena + "\n", esInit);
         }
 
         public static C3d castearA(C3d op, String tipo, int tamanio, bool esInit)
@@ -339,6 +340,13 @@ namespace CompilerCollection.CompilerCollection.C3D
             if (op.tipo == Constantes.ERROR) {
                 return null;
             }
+            if (op.tipo == Constantes.T_OBJETO) { 
+                if(op.ntipo.Equals(tipo, StringComparison.OrdinalIgnoreCase)){
+                    return op;
+                }
+                return null;
+            }
+
             if (tipo.Equals(Constantes.TIPOS[op.tipo], StringComparison.OrdinalIgnoreCase))
             {
                 return op;

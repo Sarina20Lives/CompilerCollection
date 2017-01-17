@@ -50,15 +50,15 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.textSalida = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dataLogOptimizacion = new System.Windows.Forms.DataGridView();
-            this.labelLogOptimizacion = new System.Windows.Forms.Label();
             this.No = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Regla = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Codigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Optimizado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Ambito = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.textSalida = new System.Windows.Forms.TextBox();
+            this.labelLogOptimizacion = new System.Windows.Forms.Label();
             this.toolAcciones.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -69,6 +69,7 @@
             // 
             // rtbEntrada
             // 
+            this.rtbEntrada.AcceptsTab = true;
             this.rtbEntrada.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.rtbEntrada.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbEntrada.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -329,6 +330,16 @@
             this.tabPage2.Text = "Consola";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // textSalida
+            // 
+            this.textSalida.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textSalida.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textSalida.Location = new System.Drawing.Point(3, 3);
+            this.textSalida.Multiline = true;
+            this.textSalida.Name = "textSalida";
+            this.textSalida.Size = new System.Drawing.Size(886, 385);
+            this.textSalida.TabIndex = 0;
+            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.dataLogOptimizacion);
@@ -358,17 +369,6 @@
             this.dataLogOptimizacion.ReadOnly = true;
             this.dataLogOptimizacion.Size = new System.Drawing.Size(886, 349);
             this.dataLogOptimizacion.TabIndex = 1;
-            // 
-            // labelLogOptimizacion
-            // 
-            this.labelLogOptimizacion.AutoSize = true;
-            this.labelLogOptimizacion.Dock = System.Windows.Forms.DockStyle.Top;
-            this.labelLogOptimizacion.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelLogOptimizacion.Location = new System.Drawing.Point(3, 3);
-            this.labelLogOptimizacion.Name = "labelLogOptimizacion";
-            this.labelLogOptimizacion.Size = new System.Drawing.Size(245, 36);
-            this.labelLogOptimizacion.TabIndex = 0;
-            this.labelLogOptimizacion.Text = "No hay optimizaciones por mostrar.\r\n\r\n";
             // 
             // No
             // 
@@ -405,15 +405,16 @@
             this.Ambito.Name = "Ambito";
             this.Ambito.ReadOnly = true;
             // 
-            // textSalida
+            // labelLogOptimizacion
             // 
-            this.textSalida.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textSalida.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textSalida.Location = new System.Drawing.Point(3, 3);
-            this.textSalida.Multiline = true;
-            this.textSalida.Name = "textSalida";
-            this.textSalida.Size = new System.Drawing.Size(886, 385);
-            this.textSalida.TabIndex = 0;
+            this.labelLogOptimizacion.AutoSize = true;
+            this.labelLogOptimizacion.Dock = System.Windows.Forms.DockStyle.Top;
+            this.labelLogOptimizacion.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelLogOptimizacion.Location = new System.Drawing.Point(3, 3);
+            this.labelLogOptimizacion.Name = "labelLogOptimizacion";
+            this.labelLogOptimizacion.Size = new System.Drawing.Size(245, 36);
+            this.labelLogOptimizacion.TabIndex = 0;
+            this.labelLogOptimizacion.Text = "No hay optimizaciones por mostrar.\r\n\r\n";
             // 
             // Form1
             // 

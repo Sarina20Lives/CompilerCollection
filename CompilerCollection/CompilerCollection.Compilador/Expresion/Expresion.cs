@@ -594,6 +594,14 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 return resultado;
             }
 
+            //Llamada
+            if (expresion.ToString().CompareTo(ConstantesJC.LLAMADA) == 0)
+            {
+                resultado = GeneradorC3d.resolverLLamada(this.ambito, this.ctxGlobal, this.ctxLocal, expresion);
+                return resultado;
+            }
+
+
             //Negativos
             if(expresion.ToString().CompareTo(ConstantesJC.NEGATIVO)==0){
                 if (expresion.ChildNodes.ElementAt(1).Term.ToString().CompareTo("int") == 0)
@@ -648,7 +656,10 @@ namespace CompilerCollection.CompilerCollection.Compilador
         }
 
         public bool esError(C3d c3d) 
-        { 
+        {
+            if (c3d == null) {
+                return true;
+            }
             if (c3d.tipo == Constantes.ERROR || c3d.tipo == Constantes.T_OBJETO || c3d.tipo == Constantes.T_VOID || c3d.esArr) 
             {
                 return true;
@@ -730,17 +741,26 @@ namespace CompilerCollection.CompilerCollection.Compilador
             if (raiz.ChildNodes.Count() == 2 && getSubObjEsVacio(raiz.ChildNodes.ElementAt(1))) { 
                 //id
                 nObj = raiz.ChildNodes.ElementAt(0).FindTokenAndGetText();
-                obj = GeneradorC3d.buscarObj(this.ctxLocal, nObj);
+                obj = TablaSimbolo.buscarObj(this.ctxLocal, nObj);
                 if (obj == null) {
-                    obj = GeneradorC3d.buscarObj(this.ctxGlobal, nObj);
+                    obj =TablaSimbolo.buscarObj(this.ctxGlobal, nObj);
                 }
                 if (obj == null) {
                     ManejadorErrores.Semantico("No existe la variable a la cual se hace referencia", raiz.ChildNodes.ElementAt(0).Token.Location.Line, raiz.ChildNodes.ElementAt(0).Token.Location.Column);
                     return new C3d();
                 }
                 resultado = new C3d();
-                resultado.tipo = Constantes.obtenerTipo(obj.tipo);
                 resultado.esArr = obj.esArr;
+                //Obtener el tipo del objeto
+                if (obj.esObjeto())
+                {
+                    resultado.tipo = Constantes.T_OBJETO;
+                    resultado.ntipo = obj.tipo;
+                }
+                else
+                {
+                    resultado.tipo = Constantes.obtenerTipo(obj.tipo);
+                }
                 String temp1, temp2 = "";
                 if (obj.esGlobal) {
                     C3d.escribirComentario("Obteniendo valor de una variable global", this.esInit);
@@ -765,15 +785,25 @@ namespace CompilerCollection.CompilerCollection.Compilador
             {
                 //this.id
                 nObj = raiz.ChildNodes.ElementAt(1).FindTokenAndGetText();
-                obj = GeneradorC3d.buscarObj(this.ctxGlobal, nObj);
+                obj = TablaSimbolo.buscarObj(this.ctxGlobal, nObj);
                 if (obj == null)
                 {
                     ManejadorErrores.Semantico("No existe la variable a la cual se hace referencia", raiz.ChildNodes.ElementAt(1).Token.Location.Line, raiz.ChildNodes.ElementAt(1).Token.Location.Column);
                     return new C3d();
                 }
                 resultado = new C3d();
-                resultado.tipo = Constantes.obtenerTipo(obj.tipo);
                 resultado.esArr = obj.esArr;
+                //Obtener el tipo del objeto
+                if (obj.esObjeto())
+                {
+                    resultado.tipo = Constantes.T_OBJETO;
+                    resultado.ntipo = obj.tipo;
+                }
+                else
+                {
+                    resultado.tipo = Constantes.obtenerTipo(obj.tipo);
+                }
+
                 String temp1, temp2 = "";
                 C3d.escribirComentario("Obteniendo valor de una variable global", this.esInit);
                 temp1 = C3d.generarTemp();

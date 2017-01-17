@@ -290,13 +290,6 @@ namespace CompilerCollection.CompilerCollection.Compilador
             }
         }
 
-
-
-
-
-
-
-
         public static C3d resolverAsigVar(Contexto ctxG, Contexto ctxL, Simbolo ambito, Simbolo simbolo, ParseTreeNode instancia, bool esInit)
         {
             C3d solucion = new C3d();

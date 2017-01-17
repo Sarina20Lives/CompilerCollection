@@ -70,7 +70,13 @@ namespace CompilerCollection
                 rtbConsola.Text += "Existen errores, ver reporte... \n";
                 return;
             }
-            rtbConsola.Text += Compilador.generarC3d() + "\n";
+            rtbConsola.Text += Compilador.generarC3d()+"\n";
+            if (ManejadorErrores.ExistenErrores())
+            {
+                ManejadorErrores.GenerarReporte();
+                rtbConsola.Text += "Existen errores, el C3d generado no es legitimo, ver reporte... \n";
+                return;
+            }
         }
 
         private void btnOptimizaC3D_Click(object sender, EventArgs e)
