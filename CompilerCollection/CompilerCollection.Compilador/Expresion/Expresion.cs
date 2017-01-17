@@ -580,7 +580,6 @@ namespace CompilerCollection.CompilerCollection.Compilador
         public C3d resolverOperando(ParseTreeNode expresion)
         {
             
-
             //(expresion) || {expresion}
             if (expresion.ToString().CompareTo(ConstantesJC.EXPRESION) == 0) {
                 return resolver(expresion);
@@ -588,7 +587,37 @@ namespace CompilerCollection.CompilerCollection.Compilador
 
             C3d resultado;
 
-            //Objeto
+            //ParseInt
+            if (expresion.ToString().CompareTo(ConstantesJC.PARSEINT) == 0)
+            {
+                return GeneradorC3d.resolverParseInt(this.ambito, this.ctxGlobal, this.ctxLocal, expresion);
+            }
+
+            //ParseDouble
+            if (expresion.ToString().CompareTo(ConstantesJC.PARSEDOUBLE) == 0)
+            {
+                return GeneradorC3d.resolverParseDouble(this.ambito, this.ctxGlobal, this.ctxLocal, expresion);
+            }
+
+            //IntToStr
+            if (expresion.ToString().CompareTo(ConstantesJC.INTTOSTR) == 0)
+            {
+                return GeneradorC3d.resolverIntToStr(this.ambito, this.ctxGlobal, this.ctxLocal, expresion);
+            }
+
+            //DoubleToStr
+            if (expresion.ToString().CompareTo(ConstantesJC.DOUBLETOSTR) == 0)
+            {
+                return GeneradorC3d.resolverDoubleToStr(this.ambito, this.ctxGlobal, this.ctxLocal, expresion);
+            }
+
+            //DoubleToInt
+            if (expresion.ToString().CompareTo(ConstantesJC.DOUBLETOINT) == 0)
+            {
+                return GeneradorC3d.resolverDoubleToInt(this.ambito, this.ctxGlobal, this.ctxLocal, expresion);
+            }
+
+            //Get objeto
             if (expresion.ToString().CompareTo(ConstantesJC.GETOBJ) == 0) {
                 resultado = getValObjeto(expresion);
                 return resultado;
