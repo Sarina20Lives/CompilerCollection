@@ -70,6 +70,7 @@ namespace CompilerCollection
                 rtbConsola.Text += "Existen errores, ver reporte... \n";
                 return;
             }
+
             rtbConsola.Text += Compilador.generarC3d()+"\n";
             ManejadorArchivo.agregarInit();
             if (ManejadorErrores.ExistenErrores())
