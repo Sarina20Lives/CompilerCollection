@@ -70,6 +70,7 @@ namespace CompilerCollection.CompilerCollection.Utilidades
             {
                 Console.WriteLine("Exception: " + e.Message);
             }
+            contenido = contenido.Replace("__DATE__", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
             contenido = contenido.Replace("__BODY__", simbolos);
             String fileTS = RUTA_RAIZ + "TS.html";
             try

@@ -37,6 +37,7 @@ namespace CompilerCollection.CompilerCollection.JCode
         public static String ASIGNACION = "asignacion";
         public static String GETOBJ = "getObjeto";
         public static String LLAMADA = "llamada";
-       
+        public static String RETORNO = "retorno";
+        public static String NOSQL = "nosql";
     }
 }
