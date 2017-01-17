@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Irony.Ast;
 using Irony.Parsing;
+using CompilerCollection.CompilerCollection.Utilidades;
 
 namespace CompilerCollection.CompilerCollection.JCode
 {
@@ -16,6 +17,13 @@ namespace CompilerCollection.CompilerCollection.JCode
             LanguageData lenguaje = new LanguageData(gramatica);
             Parser parser = new Parser(lenguaje);
             ParseTree arbol = parser.Parse(cadena);
+            foreach (var err in arbol.ParserMessages)
+            {
+                if (err.Message.StartsWith("Invalid"))
+                    ManejadorErrores.Lexico(err.Message.Replace("Invalid character", "Caracter inválido"), err.Location.Line, err.Location.Column, archivo);
+                if(err.Message.StartsWith("Syntax"))
+                    ManejadorErrores.Sintactico(err.Message.Replace("Syntax error, expected", "Error sintáctico, se esperaba"), err.Location.Line, err.Location.Column, archivo);
+            }
             ParseTreeNode principal = arbol.Root;
             //No se ha realizado el análisis
             if (principal == null) {

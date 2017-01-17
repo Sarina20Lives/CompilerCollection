@@ -397,6 +397,10 @@ namespace CompilerCollection.CompilerCollection.JCode
             | _llabrir + _llcerrar
             ;
 
+            sentencias.ErrorRule =
+              _llabrir + SyntaxError + _llcerrar
+            ;
+
             lsentencias.Rule = 
               MakePlusRule(lsentencias, sentencia)
             ;
@@ -423,6 +427,10 @@ namespace CompilerCollection.CompilerCollection.JCode
             | outstring + ";"
             | outint + ";"
             | nosql + ";"
+            ;
+
+            sentencia.ErrorRule =
+              SyntaxError + ";"
             ;
 
             retorno.Rule =

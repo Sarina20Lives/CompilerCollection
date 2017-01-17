@@ -84,6 +84,7 @@ namespace CompilerCollection
             if (clases == null || clases.Count == 0)
             {
                 logConsola("La cadena de entrada no es válida.");
+                ManejadorErrores.GenerarReporte();
                 return;
             }
 
@@ -116,7 +117,7 @@ namespace CompilerCollection
 
         private void logConsola(string texto)
         {
-            textConsola.Text += texto + "\n";
+            textConsola.Text += texto + "\r\n";
         }
 
         private void btnOptimizaC3D_Click(object sender, EventArgs e)
