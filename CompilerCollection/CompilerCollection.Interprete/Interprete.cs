@@ -518,9 +518,10 @@ namespace CompilerCollection.CompilerCollection.Interprete
          * | 2 | -> PTR al nombre de la colección
          * | 3 | -> número de valores - columnas
          * | 4 | -> PTR a la primera columna
-         * | 5 | -> PTR al primer valor
          * |...| -> ...
          * | x | -> PTR a la n-ésima columna
+         * |x+1| -> PTR al primer valor
+         * |...| -> ...
          * | y | -> PTR al n-ésimo valor
          */
         private void insert()

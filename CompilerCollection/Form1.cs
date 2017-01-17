@@ -102,7 +102,7 @@ namespace CompilerCollection
         private void btnGenerar4P_Click(object sender, EventArgs e)
         {
             Generador gen = new Generador(true);
-            gen.GenerarC3D();
+            gen.GenerarCuadruplos();
         }
 
         private void btnEjecutar4P_Click(object sender, EventArgs e)
