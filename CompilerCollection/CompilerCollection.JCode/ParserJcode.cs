@@ -185,6 +185,31 @@ namespace CompilerCollection.CompilerCollection.JCode
             return null;
         }
 
+        public static ParseTreeNode obtenerSentencias(ParseTreeNode raizClase)
+        {
+
+            foreach (ParseTreeNode hijo in raizClase.ChildNodes)
+            {
+                if (hijo.ToString().CompareTo(ConstantesJC.SENTENCIAS) == 0)
+                {
+                    return hijo;
+                }
+            }
+            return null;
+        }
+
+        public static ParseTreeNode obtenerElse(ParseTreeNode raizClase)
+        {
+
+            foreach (ParseTreeNode hijo in raizClase.ChildNodes)
+            {
+                if (hijo.ToString().CompareTo(ConstantesJC.ELSE) == 0)
+                {
+                    return hijo;
+                }
+            }
+            return null;
+        }
 
     }
 }

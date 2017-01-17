@@ -422,6 +422,7 @@ namespace CompilerCollection.CompilerCollection.C3D
                 if (sObj == null || !sObj.esObjeto())
                 {
                     ManejadorErrores.General("No existe la variable en la clase actual que sea un objeto " + nObj);
+                    return null;
                 }
                 padre = sObj.tipo;
             }
@@ -455,22 +456,14 @@ namespace CompilerCollection.CompilerCollection.C3D
                 temp2 = C3d.leerDePila(temp1, false);
                 temp1 = C3d.generarTemp();
                 C3d.escribirOperacion(temp1, temp2, "+", sObj.pos.ToString(), false);
-                temp2 = C3d.leerDeHeap(temp1, false);
-
-                temp1 = C3d.generarTemp();
-                C3d.escribirOperacion(temp1, temp2, "+", "1", false);
                 tthis = C3d.leerDeHeap(temp1, false);
-
             }
             //El objeto es local
             else if (sObj !=null && !sObj.esGlobal && esDeObjeto)
             {
                 temp1 = C3d.generarTemp();
                 C3d.escribirOperacion(temp1, "P", "+", sObj.pos.ToString(), false);
-                temp2 = C3d.leerDePila(temp1, false);
-                temp1 = C3d.generarTemp();
-                C3d.escribirOperacion(temp1, temp2, "+", "1", false);
-                tthis = C3d.leerDeHeap(temp1, false);
+                tthis = C3d.leerDePila(temp1, false);
             }
             //Es metodo de la clase y no de una instancia
             else 
@@ -536,7 +529,7 @@ namespace CompilerCollection.CompilerCollection.C3D
 
             //Aumentar P
             C3d.aumentarP(ambito.tamanio.ToString(), false);
-            C3d.escribir(ambito.padre + "_" + nMtd + "_" + lparams + "();", false);
+            C3d.escribir(padre + "_" + nMtd + "_" + lparams + "();", false);
             //Guardando el return
             temp1 = C3d.generarTemp();
             C3d.escribirOperacion(temp1, "P", "+", "0", false);
@@ -1059,20 +1052,160 @@ namespace CompilerCollection.CompilerCollection.C3D
         public void resolverIf(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
         {
             ctxL.aumentarNivel();
-            Expresion cond = new Expresion(ctxG, ctxL, ambito, false);
+            Compilador.Compilador.generarEtqsSalida();
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            //Linicio:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(true) + ":", false);
+            //Generar condicion
+            C3d condicion = exp.resolver(raiz.ChildNodes.ElementAt(0));
+            condicion = C3d.castearA(condicion, "bool", ambito.tamanio, false);
+            if (condicion == null) {
+                ManejadorErrores.General("Se esperaba un tipo bool para la condición del if");
+                ctxL.limpiarNivel();
+                Compilador.Compilador.eliminarEtqsSalida();
+                return;
+            }
+            C3d.verificarBoolean(condicion, false);
+            //Lv:
+            C3d.escribir(condicion.etqV + ":", false);
+            //Verificar y resolver sentencias si existen
+            ParseTreeNode sentencias = ParserJcode.obtenerSentencias(raiz);
+            if (sentencias != null && sentencias.ChildNodes.Count()>0) {
+                generar(ambito, ctxG, ctxL, sentencias, false);
+            }
+            //goto Lfin:
+            C3d.escribirSaltoIncond(Compilador.Compilador.getEtqSalida(false), false);
+            //Lf:
+            C3d.escribir(condicion.etqF + ":", false);
 
+            ParseTreeNode otrosIf = ParserJcode.obtenerOtrosIf(raiz);
+            if (otrosIf != null && otrosIf.ChildNodes.Count() > 0) {
+                resolverOtrosIf(ambito, ctxG, ctxL, otrosIf);
+            }
 
-
-
+            //Lfin:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(false) + ":", false);
             ctxL.limpiarNivel();
+            Compilador.Compilador.eliminarEtqsSalida();
+        }
+
+        public void resolverOtrosIf(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            C3d condicion;
+            ParseTreeNode sentencias;
+            //Lista de else if:
+            if (raiz.ChildNodes.ElementAt(0).ToString().Equals(ConstantesJC.ELSEIFS, StringComparison.OrdinalIgnoreCase)) {
+                foreach (ParseTreeNode elseif in raiz.ChildNodes.ElementAt(0).ChildNodes) {
+                    //Generar condicion
+                    condicion = exp.resolver(elseif.ChildNodes.ElementAt(0));
+                    condicion = C3d.castearA(condicion, "bool", ambito.tamanio, false);
+                    if (condicion == null)
+                    {
+                        ManejadorErrores.General("Se esperaba un tipo bool para la condición del elseif");
+                        continue;
+                    }
+                    C3d.verificarBoolean(condicion, false);
+                    //Lv:
+                    C3d.escribir(condicion.etqV + ":", false);
+                    //Verificar y resolver sentencias si existen
+                    sentencias = ParserJcode.obtenerSentencias(elseif);
+                    if (sentencias != null && sentencias.ChildNodes.Count() > 0)
+                    {
+                        generar(ambito, ctxG, ctxL, sentencias, false);
+                    }
+                    //goto Lfin:
+                    C3d.escribirSaltoIncond(Compilador.Compilador.getEtqSalida(false), false);
+                    //Lf:
+                    C3d.escribir(condicion.etqF + ":", false);
+                }            
+            }
+
+            //Generando las sentencias del else si existe
+            ParseTreeNode nElse = ParserJcode.obtenerElse(raiz);
+            if (nElse == null) {
+                return;
+            }
+            sentencias = ParserJcode.obtenerSentencias(nElse);
+            if (sentencias == null) {
+                return;
+            }
+            generar(ambito, ctxG, ctxL, sentencias, false);
         }
 
         public void resolverIfNot(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
         {
+            ctxL.aumentarNivel();
+            Compilador.Compilador.generarEtqsSalida();
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            //Linicio:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(true) + ":", false);
+            //Generar condicion
+            C3d condicion = exp.resolver(raiz.ChildNodes.ElementAt(0));
+            condicion = C3d.castearA(condicion, "bool", ambito.tamanio, false);
+            if (condicion == null)
+            {
+                ManejadorErrores.General("Se esperaba un tipo bool para la condición del if");
+                ctxL.limpiarNivel();
+                Compilador.Compilador.eliminarEtqsSalida();
+                return;
+            }
+            C3d.verificarBoolean(condicion, false);
+            //Lf:
+            C3d.escribir(condicion.etqF + ":", false);
+            //Verificar y resolver sentencias si existen
+            ParseTreeNode sentencias = ParserJcode.obtenerSentencias(raiz);
+            if (sentencias != null && sentencias.ChildNodes.Count() > 0)
+            {
+                generar(ambito, ctxG, ctxL, sentencias, false);
+            }
+            //goto Lfin:
+            C3d.escribirSaltoIncond(Compilador.Compilador.getEtqSalida(false), false);
+            //Lv:
+            C3d.escribir(condicion.etqV + ":", false);
+
+        
+            //Lfin:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(false) + ":", false);
+            ctxL.limpiarNivel();
+            Compilador.Compilador.eliminarEtqsSalida();
         }
 
         public void resolverWhile(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
         {
+            ctxL.aumentarNivel();
+            Compilador.Compilador.generarEtqsSalida();
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            //Linicio:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(true) + ":", false);
+            //Generar condicion
+            C3d condicion = exp.resolver(raiz.ChildNodes.ElementAt(0));
+            condicion = C3d.castearA(condicion, "bool", ambito.tamanio, false);
+            if (condicion == null)
+            {
+                ManejadorErrores.General("Se esperaba un tipo bool para la condición del if");
+                ctxL.limpiarNivel();
+                Compilador.Compilador.eliminarEtqsSalida();
+                return;
+            }
+            C3d.verificarBoolean(condicion, false);
+            //Lv:
+            C3d.escribir(condicion.etqV + ":", false);
+            //Verificar y resolver sentencias si existen
+            ParseTreeNode sentencias = ParserJcode.obtenerSentencias(raiz);
+            if (sentencias != null && sentencias.ChildNodes.Count() > 0)
+            {
+                generar(ambito, ctxG, ctxL, sentencias, false);
+            }
+            //goto Linicio:
+            C3d.escribirSaltoIncond(Compilador.Compilador.getEtqSalida(true), false);
+            //Lf:
+            C3d.escribir(condicion.etqF + ":", false);
+            //Lfin:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(false) + ":", false);
+            ctxL.limpiarNivel();
+            Compilador.Compilador.eliminarEtqsSalida();
+
         }
 
         public void resolverDoWhile(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)

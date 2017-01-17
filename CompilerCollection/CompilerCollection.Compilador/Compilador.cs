@@ -27,9 +27,9 @@ namespace CompilerCollection.CompilerCollection.Compilador
                 return null;
             }
             if (tipo) {
-                return display.Last().etqInicio;
+                return display.Peek().etqInicio;
             }
-            return display.Last().etqFinal;
+            return display.Peek().etqFinal;
         }
 
         public static void generarEtqsSalida() {
@@ -95,6 +95,7 @@ namespace CompilerCollection.CompilerCollection.Compilador
             Contexto ctxGlobal = new Contexto();
             Contexto ctxLocal = new Contexto();
             generadorc3d.iniciar();
+            C3d.iniciarC3d();
             foreach (ClaseJCode clase in repertorioClases)
             {
                 String nombre = clase.clase.ChildNodes.ElementAt(0).FindTokenAndGetText();

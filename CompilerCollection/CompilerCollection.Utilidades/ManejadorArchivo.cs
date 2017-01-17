@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Forms;
 
 namespace CompilerCollection.CompilerCollection.Utilidades
 {
+
     class ManejadorArchivo
     {
+
         private static String RUTA_RAIZ = "C:\\FilesCompilerCollection\\";
 
         public static void agregarInit() {
@@ -40,7 +43,6 @@ namespace CompilerCollection.CompilerCollection.Utilidades
             }
             return contenido;
         }
-
 
         public static String buscarContenidoArchivoImport(String nombre){
             String file = RUTA_RAIZ + nombre + ".jc";
@@ -117,4 +119,5 @@ namespace CompilerCollection.CompilerCollection.Utilidades
         }
 
     }
+
 }

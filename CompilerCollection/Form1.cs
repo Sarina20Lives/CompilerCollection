@@ -19,6 +19,8 @@ namespace CompilerCollection
 {
     public partial class Form1 : Form
     {
+        private const String filtroJC = "Archivo JCode|*.jc", filtroACF = "Archivo ACode|*.acf";
+
         public Form1()
         {
             InitializeComponent();
@@ -26,27 +28,37 @@ namespace CompilerCollection
 
         private void btnNuevo_Click(object sender, EventArgs e)
         {
-
+            tabArchivos.TabPages.Add(new TabFile());
+            tabArchivos.SelectedIndex = tabArchivos.TabPages.Count - 1;
         }
 
         private void btnAbrir_Click(object sender, EventArgs e)
         {
-
+            TabFile abierta = TabFile.abrir();
+            if (abierta != null)
+            {
+                tabArchivos.TabPages.Add(abierta);
+                tabArchivos.SelectedIndex = tabArchivos.TabPages.Count - 1;
+            }
         }
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-
+            if (tabArchivos.SelectedIndex >= 0)
+                ((TabFile)tabArchivos.SelectedTab).guardar();
         }
 
         private void btnGuardarComo_Click(object sender, EventArgs e)
         {
-
+            if (tabArchivos.SelectedIndex >= 0)
+                ((TabFile)tabArchivos.SelectedTab).guardarComo();
         }
 
         private void btnCerrar_Click(object sender, EventArgs e)
         {
-
+            int i = tabArchivos.SelectedIndex;
+            if (i >= 0)
+                tabArchivos.TabPages.RemoveAt(i);
         }
 
         private void btnGenerarC3D_Click(object sender, EventArgs e)
@@ -70,6 +82,7 @@ namespace CompilerCollection
                 rtbConsola.Text += "Existen errores, ver reporte... \n";
                 return;
             }
+
             rtbConsola.Text += Compilador.generarC3d()+"\n";
             ManejadorArchivo.agregarInit();
             if (ManejadorErrores.ExistenErrores())

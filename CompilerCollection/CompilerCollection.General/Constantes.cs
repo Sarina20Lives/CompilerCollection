@@ -20,13 +20,13 @@ namespace CompilerCollection.CompilerCollection.General
         public static int T_CHAR = 4;
         public static int T_STRING = 5;
         public static int T_OBJETO = 6;
-        public static String[] TIPOS= {"void", "boolean", "int", "double", "char", "string", "objeto"};
+        public static String[] TIPOS= {"void", "bool", "int", "double", "char", "string", "objeto"};
 
         public static int obtenerTipo(String tipo) {
             if (tipo.Equals("void", StringComparison.OrdinalIgnoreCase)) {
                 return T_VOID;
             }
-            if (tipo.Equals("boolean", StringComparison.OrdinalIgnoreCase))
+            if (tipo.Equals("bool", StringComparison.OrdinalIgnoreCase))
             {
                 return T_BOOLEAN;
             }
