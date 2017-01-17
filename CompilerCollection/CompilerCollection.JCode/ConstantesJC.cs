@@ -66,6 +66,11 @@ namespace CompilerCollection.CompilerCollection.JCode
         public static String DOUBLETOSTR = "doubleToStr";
         public static String DOUBLETOINT = "doubleToInt";
 
+        public static String OTHERWISE = "otherwise";
+        public static String CASE = "case";
+        public static String CONTENIDO = "contenidoCase";
+        public static String CASES = "cases";
+
 
     }
 }

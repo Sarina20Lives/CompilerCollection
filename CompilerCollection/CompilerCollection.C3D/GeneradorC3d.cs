@@ -1378,7 +1378,63 @@ namespace CompilerCollection.CompilerCollection.C3D
 
         public void resolverSwitch(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
         {
-            //TODO:FALTA IMPLEMENTAR
+            ctxL.aumentarNivel();
+            Compilador.Compilador.generarEtqsSalida();
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+
+            //Linicio:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(true) + ":", false);
+
+            //Expresion:
+            C3d condicion = exp.resolver(raiz.ChildNodes.ElementAt(0));
+            if (condicion == null || condicion.tipo == Constantes.T_OBJETO)
+            {
+                ManejadorErrores.General("No se ha podido obtener el valor a evaluar para el switch");
+                ctxL.limpiarNivel();
+                Compilador.Compilador.eliminarEtqsSalida();
+                return;
+            }
+            
+            C3d valor;
+            String etqV="", etqF = "";
+            foreach (ParseTreeNode caso in raiz.ChildNodes.ElementAt(1).ChildNodes) {
+                if (caso.ToString().Equals(ConstantesJC.CASE)) {
+                    valor = exp.resolver(caso.ChildNodes.ElementAt(0));                    
+                    valor = C3d.castearA(valor, Constantes.TIPOS[condicion.tipo], ambito.tamanio, false);
+                    if (valor == null) {
+                        ManejadorErrores.General("No se ha podido obtener el valor a evaluar para el switch");
+                        ctxL.limpiarNivel();
+                        Compilador.Compilador.eliminarEtqsSalida();
+                        return;
+                    }
+                    etqV = C3d.generarEtq();
+                    etqF = C3d.generarEtq();
+                    //if exp = valor goto lv
+                    C3d.escribirSaltoCond(condicion.cad, "==", valor.cad, etqV, false);
+                    //goto lf
+                    C3d.escribirSaltoIncond(etqF, false);
+                    //Lv:
+                    C3d.escribir(etqV + ":", false);
+                    //Verificar y resolver sentencias si existen
+                    ParseTreeNode sentencias = ParserJcode.obtenerSentencias(caso);
+                    if (sentencias != null && sentencias.ChildNodes.Count() > 0)
+                    {
+                        generar(ambito, ctxG, ctxL, sentencias, false);
+                    }
+                    //Lf:
+                    C3d.escribir(etqF + ":", false);
+                }            
+            }
+            //Verificar y resolver el default
+            ParseTreeNode otherwise = ParserJcode.obtenerOtherwise(raiz.ChildNodes.ElementAt(1));
+            if (otherwise != null && otherwise.ChildNodes.Count() > 0)
+            {
+                generar(ambito, ctxG, ctxL, otherwise.ChildNodes.ElementAt(0), false);
+            }
+            //Lfin:
+            C3d.escribir(Compilador.Compilador.getEtqSalida(false) + ":", false);
+            ctxL.limpiarNivel();
+            Compilador.Compilador.eliminarEtqsSalida();
         }
 
         public void resolverFor(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
@@ -1393,7 +1449,62 @@ namespace CompilerCollection.CompilerCollection.C3D
 
         public void resolverVariacion(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
         {
-            //TODO:FALTA IMPLEMENTAR
+            C3d resultado = new C3d();
+            String tthis, temp1, temp2, nObj = "";
+            ParseTreeNode parametros = null;
+            C3d valorParam;
+            Expresion expresion;
+            int cont = 2;
+            Simbolo sObj = null;
+            Simbolo sMtd = null;
+            bool esDeObjeto = true;
+
+            ParseTreeNode obj = raiz.ChildNodes.ElementAt(0);
+            //id
+            if (obj.ChildNodes.Count() == 1)
+            {
+                nObj = obj.ChildNodes.ElementAt(0).FindTokenAndGetText();
+                sObj = TablaSimbolo.buscarObj(ctxL, nObj);
+                if (sObj == null) {
+                    sObj = TablaSimbolo.buscarObj(ctxG, nObj);
+                }
+                if (sObj == null)
+                {
+                    ManejadorErrores.Semantico("La variable no existe o no es accesible", obj.ChildNodes.ElementAt(0).Token.Location.Line, obj.ChildNodes.ElementAt(0).Token.Location.Column);
+                    return;
+                }
+            }
+            //this.id
+            else if (obj.ChildNodes.Count() == 2 &&
+                obj.ChildNodes.ElementAt(0).FindTokenAndGetText().Equals("this", StringComparison.OrdinalIgnoreCase))
+            {
+                nObj = obj.ChildNodes.ElementAt(1).FindTokenAndGetText();
+                sObj = TablaSimbolo.buscarObj(ctxG, nObj);
+                if (sObj == null)
+                {
+                    ManejadorErrores.Semantico("La variable no existe o no es accesible", obj.ChildNodes.ElementAt(1).Token.Location.Line, obj.ChildNodes.ElementAt(1).Token.Location.Column);
+                    return;
+                }
+            }
+
+            //El objeto es global
+            if (sObj.esGlobal)
+            {
+                //Obtener el this
+                temp1 = C3d.generarTemp();
+                C3d.escribirOperacion(temp1, "P", "+", "1", false);
+                temp2 = C3d.leerDePila(temp1, false);
+                temp1 = C3d.generarTemp();
+                C3d.escribirOperacion(temp1, temp2, "+", sObj.pos.ToString(), false);
+                tthis = C3d.leerDeHeap(temp1, false);
+            }
+            //El objeto es local
+            else{
+                temp1 = C3d.generarTemp();
+                C3d.escribirOperacion(temp1, "P", "+", sObj.pos.ToString(), false);
+                tthis = C3d.leerDePila(temp1, false);
+            }
+
         }
 
         public void resolverLoop(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)

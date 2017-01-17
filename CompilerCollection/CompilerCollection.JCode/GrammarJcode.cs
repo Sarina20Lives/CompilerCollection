@@ -739,8 +739,8 @@ namespace CompilerCollection.CompilerCollection.JCode
             #region Preferencias
             this.Root = inicio;
             MarkPunctuation(_pabrir, _pcerrar, _llabrir, _llcerrar, _cabrir, _ccerrar, _case, _of, _ecse, _class, _import, _ext, _father, 
-                _super, _override, _rtrn, _else, _if, _while, _do, _repeat, _until, _for, _loop, _parseint, _parsedouble, _inttostr, _doubletostr, 
-                _doubletoint, _outstring, _outint, _cols, _from, _val, _new, _main);
+                _super, _override, _rtrn, _else, _if, _while, _do, _repeat, _until, _for, _loop, _parseint, _parsedouble, _inttostr, _doubletostr,
+                _doubletoint, _outstring, _outint, _cols, _from, _val, _new, _main, _otherwise);
             MarkPunctuation(".", ";", ":", ",", "?", "!", "=");
             //MarkTransient(sentencia, conjunto, detalle, nounitarios, unitarios, tipo);
             MarkTransient(cases, sentencia, sentencias, elemento, elementos, inivar, decparams, asigparams, import, inimatriz, acceso, subobj,
