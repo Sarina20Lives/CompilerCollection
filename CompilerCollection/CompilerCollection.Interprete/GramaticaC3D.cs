@@ -60,7 +60,8 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 _boolToStr = ToTerm("boolToStr"),
                 _compareStr = ToTerm("compareStr"),
                 _outString = ToTerm("outString"),
-                _error = ToTerm("error");
+                _error = ToTerm("error"),
+                _breakpoint = ToTerm("breakpoint");
 
             Terminal
                 _mas = ToTerm("+"),
@@ -116,6 +117,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 printf = new NonTerminal("imprime"),
                 nonsql = new NonTerminal("nonsql"),
                 core = new NonTerminal("core"),
+                breakpoint = new NonTerminal("breakpoint"),
 
                 valor = new NonTerminal("valor"),
                 destino = new NonTerminal("destino"),
@@ -151,7 +153,6 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 | acceso_heap
                 | acceso_stack
                 | asigna_stack
-                | acceso_heap
                 | asigna_heap
                 | suma
                 | resta
@@ -170,6 +171,11 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 | printf
                 | nonsql
                 | core
+                | breakpoint
+            ;
+
+            breakpoint.Rule
+                = _breakpoint
             ;
 
             etiqueta.Rule

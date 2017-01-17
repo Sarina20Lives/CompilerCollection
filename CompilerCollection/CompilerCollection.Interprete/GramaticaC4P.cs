@@ -85,6 +85,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                         sentencia = RefactorizarImprime(sentencia);
                         break;
                     case "etiqueta":
+                    case "breakpoint":
                     case "llamada":
                     case "asignación a stack":
                     case "asignación a heap":
@@ -182,7 +183,8 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 _boolToStr = ToTerm("boolToStr"),
                 _compareStr = ToTerm("compareStr"),
                 _outString = ToTerm("outString"),
-                _error = ToTerm("error");
+                _error = ToTerm("error"),
+                _breakpoint = ToTerm("breakpoint");
 
             Terminal
                 _mas = ToTerm("+"),
@@ -241,6 +243,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 printf = new NonTerminal("imprime"),
                 nonsql = new NonTerminal("nonsql"),
                 core = new NonTerminal("core"),
+                breakpoint = new NonTerminal("breakpoint"),
 
                 valor = new NonTerminal("valor"),
                 destino = new NonTerminal("destino"),
@@ -402,6 +405,10 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 | _call + "," + "," + "," + _compareStr
                 | _call + "," + "," + "," + _outString
                 | _call + "," + "," + "," + _error
+            ;
+
+            breakpoint.Rule
+                = _breakpoint
             ;
 
             formatos.Rule = _fc | _fd | _ff;

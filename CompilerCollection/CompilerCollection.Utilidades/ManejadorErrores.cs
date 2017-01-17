@@ -88,6 +88,8 @@ namespace CompilerCollection.CompilerCollection.Utilidades
             {
                 body += err.getHTML();
             }
+            if (body == "")
+                body = "<tr><td colspan='5' class='center'>No existen errores ;)</td></tr>";
             reporte = reporte.Replace("__BODY__", body);
             File.WriteAllText(RUTA_REPORTE, reporte);
         }

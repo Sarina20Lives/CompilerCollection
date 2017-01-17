@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Forms;
 
 namespace CompilerCollection.CompilerCollection.Utilidades
 {
+
     class ManejadorArchivo
     {
+
         private static String RUTA_RAIZ = "C:\\FilesCompilerCollection\\";
 
         public static void agregarInit() {
@@ -40,7 +43,6 @@ namespace CompilerCollection.CompilerCollection.Utilidades
             }
             return contenido;
         }
-
 
         public static String buscarContenidoArchivoImport(String nombre){
             String file = RUTA_RAIZ + nombre + ".jc";
@@ -91,7 +93,7 @@ namespace CompilerCollection.CompilerCollection.Utilidades
         public static String escribirTS(String simbolos)
         {
             String resultado = "Error al generar la tabla de Símbolos";
-            String file = RUTA_RAIZ + "PlantillaTS.html";
+            String file = RUTA_RAIZ + "Reportes\\PlantillaTS.html";
             String contenido = "";
             try
             {
@@ -103,7 +105,7 @@ namespace CompilerCollection.CompilerCollection.Utilidades
             }
             contenido = contenido.Replace("__DATE__", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
             contenido = contenido.Replace("__BODY__", simbolos);
-            String fileTS = RUTA_RAIZ + "TS.html";
+            String fileTS = RUTA_RAIZ + "Reportes\\TS.html";
             try
             {
                 File.WriteAllText(fileTS, contenido);
@@ -117,4 +119,5 @@ namespace CompilerCollection.CompilerCollection.Utilidades
         }
 
     }
+
 }
