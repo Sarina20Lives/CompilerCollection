@@ -101,6 +101,9 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 var sentencia = cuerpo.ChildNodes[i];
                 switch (sentencia.ToString())
                 {
+                    case "breakpoint":
+                        //Para revisar el C3D
+                        break;
                     case "etiqueta":
                         //Ignorar etiqueta
                         break;
