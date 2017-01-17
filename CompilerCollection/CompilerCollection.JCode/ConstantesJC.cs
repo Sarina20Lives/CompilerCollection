@@ -54,5 +54,11 @@ namespace CompilerCollection.CompilerCollection.JCode
         public static String LOOP = "loop";
         public static String OUTSTRING = "outstring";
         public static String OUTINT = "outint";
+
+        public static String OTROSIF = "otros";
+        public static String ELSEIFS = "elseIfs";
+        public static String ELSEIF = "elseIf";
+        public static String ELSE = "else";
+
     }
 }
