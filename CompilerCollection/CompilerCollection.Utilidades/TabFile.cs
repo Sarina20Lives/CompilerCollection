@@ -38,6 +38,11 @@ namespace CompilerCollection.CompilerCollection.Utilidades
             this.Path = path;
         }
 
+        public string getText()
+        {
+            return Controls[0].Text;
+        }
+
         public static TabFile abrir()
         { 
             OpenFileDialog ofd = new OpenFileDialog();

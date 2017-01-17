@@ -28,8 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.rtbEntrada = new System.Windows.Forms.RichTextBox();
-            this.rtbConsola = new System.Windows.Forms.RichTextBox();
             this.toolAcciones = new System.Windows.Forms.ToolStrip();
             this.btnNuevo = new System.Windows.Forms.ToolStripButton();
             this.btnAbrir = new System.Windows.Forms.ToolStripButton();
@@ -47,8 +45,7 @@
             this.btnTablaSimbolos = new System.Windows.Forms.ToolStripButton();
             this.btnLogError = new System.Windows.Forms.ToolStripButton();
             this.btnAcercaDe = new System.Windows.Forms.ToolStripButton();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPrincipal = new System.Windows.Forms.TabControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.textSalida = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -60,43 +57,15 @@
             this.Ambito = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labelLogOptimizacion = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textConsola = new System.Windows.Forms.TextBox();
             this.tabArchivos = new System.Windows.Forms.TabControl();
             this.toolAcciones.SuspendLayout();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.tabPrincipal.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataLogOptimizacion)).BeginInit();
             this.tabPage4.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // rtbEntrada
-            // 
-            this.rtbEntrada.AcceptsTab = true;
-            this.rtbEntrada.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.rtbEntrada.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbEntrada.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtbEntrada.Location = new System.Drawing.Point(3, 3);
-            this.rtbEntrada.Margin = new System.Windows.Forms.Padding(5, 3, 3, 3);
-            this.rtbEntrada.Name = "rtbEntrada";
-            this.rtbEntrada.Size = new System.Drawing.Size(886, 244);
-            this.rtbEntrada.TabIndex = 0;
-            this.rtbEntrada.Text = "";
-            // 
-            // rtbConsola
-            // 
-            this.rtbConsola.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.rtbConsola.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.rtbConsola.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.rtbConsola.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtbConsola.Location = new System.Drawing.Point(3, 247);
-            this.rtbConsola.Name = "rtbConsola";
-            this.rtbConsola.ReadOnly = true;
-            this.rtbConsola.Size = new System.Drawing.Size(886, 141);
-            this.rtbConsola.TabIndex = 1;
-            this.rtbConsola.TabStop = false;
-            this.rtbConsola.Text = "";
             // 
             // toolAcciones
             // 
@@ -295,34 +264,21 @@
             this.btnAcercaDe.ToolTipText = "SOL";
             this.btnAcercaDe.Click += new System.EventHandler(this.btnAcercaDe_Click);
             // 
-            // tabControl1
+            // tabPrincipal
             // 
-            this.tabControl1.Alignment = System.Windows.Forms.TabAlignment.Bottom;
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tabPrincipal.Alignment = System.Windows.Forms.TabAlignment.Bottom;
+            this.tabPrincipal.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPage4);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Location = new System.Drawing.Point(0, 55);
-            this.tabControl1.Multiline = true;
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(900, 417);
-            this.tabControl1.TabIndex = 11;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.tabPage1.Controls.Add(this.rtbEntrada);
-            this.tabPage1.Controls.Add(this.rtbConsola);
-            this.tabPage1.Location = new System.Drawing.Point(4, 4);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(892, 391);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Área de pruebas";
+            this.tabPrincipal.Controls.Add(this.tabPage4);
+            this.tabPrincipal.Controls.Add(this.tabPage2);
+            this.tabPrincipal.Controls.Add(this.tabPage3);
+            this.tabPrincipal.Location = new System.Drawing.Point(0, 55);
+            this.tabPrincipal.Multiline = true;
+            this.tabPrincipal.Name = "tabPrincipal";
+            this.tabPrincipal.SelectedIndex = 0;
+            this.tabPrincipal.Size = new System.Drawing.Size(900, 417);
+            this.tabPrincipal.TabIndex = 11;
             // 
             // tabPage2
             // 
@@ -332,7 +288,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(892, 391);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Consola";
+            this.tabPage2.Text = "Salida de ejecución código 3D";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // textSalida
@@ -424,7 +380,7 @@
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.tabArchivos);
-            this.tabPage4.Controls.Add(this.textBox1);
+            this.tabPage4.Controls.Add(this.textConsola);
             this.tabPage4.Location = new System.Drawing.Point(4, 4);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
@@ -433,14 +389,14 @@
             this.tabPage4.Text = "Área de edición";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // textBox1
+            // textConsola
             // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.textBox1.Location = new System.Drawing.Point(3, 266);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(886, 122);
-            this.textBox1.TabIndex = 0;
+            this.textConsola.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.textConsola.Location = new System.Drawing.Point(3, 266);
+            this.textConsola.Multiline = true;
+            this.textConsola.Name = "textConsola";
+            this.textConsola.Size = new System.Drawing.Size(886, 122);
+            this.textConsola.TabIndex = 0;
             // 
             // tabArchivos
             // 
@@ -459,14 +415,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(900, 484);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabPrincipal);
             this.Controls.Add(this.toolAcciones);
             this.Name = "Form1";
             this.Text = "Compiler Collection - By Sarina20Lives";
             this.toolAcciones.ResumeLayout(false);
             this.toolAcciones.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
+            this.tabPrincipal.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
@@ -481,8 +436,6 @@
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox rtbEntrada;
-        private System.Windows.Forms.RichTextBox rtbConsola;
         private System.Windows.Forms.ToolStrip toolAcciones;
         private System.Windows.Forms.ToolStripButton btnNuevo;
         private System.Windows.Forms.ToolStripButton btnAbrir;
@@ -500,8 +453,7 @@
         private System.Windows.Forms.ToolStripButton btnTablaSimbolos;
         private System.Windows.Forms.ToolStripButton btnLogError;
         private System.Windows.Forms.ToolStripButton btnAcercaDe;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabControl tabPrincipal;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataGridView dataLogOptimizacion;
@@ -514,7 +466,7 @@
         private System.Windows.Forms.TextBox textSalida;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.TabControl tabArchivos;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textConsola;
     }
 }
 

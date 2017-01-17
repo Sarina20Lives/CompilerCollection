@@ -93,7 +93,7 @@ namespace CompilerCollection.CompilerCollection.Utilidades
         public static String escribirTS(String simbolos)
         {
             String resultado = "Error al generar la tabla de Símbolos";
-            String file = RUTA_RAIZ + "PlantillaTS.html";
+            String file = RUTA_RAIZ + "Reportes\\PlantillaTS.html";
             String contenido = "";
             try
             {
@@ -105,7 +105,7 @@ namespace CompilerCollection.CompilerCollection.Utilidades
             }
             contenido = contenido.Replace("__DATE__", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
             contenido = contenido.Replace("__BODY__", simbolos);
-            String fileTS = RUTA_RAIZ + "TS.html";
+            String fileTS = RUTA_RAIZ + "Reportes\\TS.html";
             try
             {
                 File.WriteAllText(fileTS, contenido);

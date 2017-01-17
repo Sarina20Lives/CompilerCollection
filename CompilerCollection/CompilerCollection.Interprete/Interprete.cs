@@ -74,7 +74,7 @@ namespace CompilerCollection.CompilerCollection.Interprete
         private void Ejecutar(ParseTreeNode nodo, string titulo)
         {
             this.programa = nodo;
-            MessageBox.Show("Inicia la ejecución.", titulo);
+            MessageBox.Show("Inicia la ejecución...", titulo);
             ParseTreeNode principal = null;
             foreach (var metodo in programa.ChildNodes)
             {
@@ -90,10 +90,10 @@ namespace CompilerCollection.CompilerCollection.Interprete
                 return;
             }
             Ejecutar(principal, new Dictionary<string, double>());
-            MessageBox.Show("Salida:\n" + Salida, titulo);
+            MessageBox.Show("Ejecución finalizada...", titulo);
         }
 
-        public void Ejecutar(ParseTreeNode metodo, Dictionary<string, double> temps)
+        private void Ejecutar(ParseTreeNode metodo, Dictionary<string, double> temps)
         {
             ParseTreeNode cuerpo = metodo.ChildNodes[1];
             for (int i = 0; i < cuerpo.ChildNodes.Count; i++)
