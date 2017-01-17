@@ -11,6 +11,37 @@ namespace CompilerCollection.CompilerCollection.Utilidades
     {
         private static String RUTA_RAIZ = "C:\\FilesCompilerCollection\\";
 
+        public static void agregarInit() {
+            String fileC3d = RUTA_RAIZ + "c3d.txt";
+            String fileInit = RUTA_RAIZ + "init.txt";
+            String contenido = "";
+            try
+            {
+                contenido = leer(fileInit);
+                File.AppendAllText(fileC3d, contenido);
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+        
+        }
+
+        public static String leer(String file)
+        {
+            String contenido = "";
+            try
+            {
+                contenido = File.ReadAllText(file);
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+            return contenido;
+        }
+
+
         public static String buscarContenidoArchivoImport(String nombre){
             String file = RUTA_RAIZ + nombre + ".jc";
             String contenido="";

@@ -39,5 +39,20 @@ namespace CompilerCollection.CompilerCollection.JCode
         public static String LLAMADA = "llamada";
         public static String RETORNO = "retorno";
         public static String NOSQL = "nosql";
+        public static String BREAK = "break";
+        public static String CONTINUE = "continue";
+        public static String IF = "if";
+        public static String IFSIMPLY = "ifSimply";
+        public static String IFNOT = "ifnot";
+        public static String SWITCH = "switch";
+        public static String WHILE = "while";
+        public static String DOWHILE = "dowhile";
+        public static String WHILEX = "whilex";
+        public static String REPEAT = "repeat";
+        public static String FOR = "for";
+        public static String FORPARIMPAR = "forparimpar";
+        public static String LOOP = "loop";
+        public static String OUTSTRING = "outstring";
+        public static String OUTINT = "outint";
     }
 }

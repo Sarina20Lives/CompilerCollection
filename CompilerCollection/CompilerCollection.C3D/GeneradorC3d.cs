@@ -105,6 +105,65 @@ namespace CompilerCollection.CompilerCollection.C3D
                 return;
             }
 
+            if (raiz.ToString().CompareTo(ConstantesJC.IF) == 0)
+            {
+                resolverIf(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+
+            if (raiz.ToString().CompareTo(ConstantesJC.IFNOT) == 0)
+            {
+                resolverIfNot(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+
+            if (raiz.ToString().CompareTo(ConstantesJC.WHILE) == 0)
+            {
+                resolverWhile(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+
+            if (raiz.ToString().CompareTo(ConstantesJC.DOWHILE) == 0)
+            {
+                resolverDoWhile(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+
+            if (raiz.ToString().CompareTo(ConstantesJC.WHILEX) == 0)
+            {
+                resolverWhilex(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+
+            if (raiz.ToString().CompareTo(ConstantesJC.REPEAT) == 0)
+            {
+                resolverRepeat(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+
+            if (raiz.ToString().CompareTo(ConstantesJC.OUTSTRING) == 0)
+            {
+                resolverOutString(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+
+            if (raiz.ToString().CompareTo(ConstantesJC.OUTINT) == 0)
+            {
+                resolverOutInt(ambito, ctxG, ctxL, raiz);
+                return;
+            }
+
+            if (raiz.Token != null  && raiz.FindTokenAndGetText().Equals(ConstantesJC.BREAK, StringComparison.OrdinalIgnoreCase))
+            {
+                resolverEscape(false, raiz.Token.Location.Line, raiz.Token.Location.Column);
+                return;
+            }
+
+            if (raiz.Token !=null && raiz.FindTokenAndGetText().Equals(ConstantesJC.CONTINUE, StringComparison.OrdinalIgnoreCase))
+            {
+                resolverEscape(true, raiz.Token.Location.Line, raiz.Token.Location.Column);
+                return;
+            }
 
             if (raiz.ChildNodes.Count <= 0)
             {
@@ -121,15 +180,21 @@ namespace CompilerCollection.CompilerCollection.C3D
                 generar(ambito, ctxG, ctxL, hijo, esInit);
             }
 
-            if (raiz.ToString().CompareTo(ConstantesJC.CLASE) == 0 ||
-                raiz.ToString().CompareTo(ConstantesJC.CONSTRUCTOR) == 0 ||
-                raiz.ToString().CompareTo(ConstantesJC.PRINCIPAL) == 0 ||
-                raiz.ToString().CompareTo(ConstantesJC.METODO) == 0)
+
+            if (raiz.ToString().CompareTo(ConstantesJC.CLASE) == 0){
+                C3d.escribir("}\n", esInit);
+            }
+            if (raiz.ToString().CompareTo(ConstantesJC.CONSTRUCTOR) == 0 ){
+                C3d.escribir(final + ":", esInit);
+                C3d.escribir("}\n", esInit);
+            }
+            if (raiz.ToString().CompareTo(ConstantesJC.PRINCIPAL) == 0 ){
+                C3d.escribir(final + ":", esInit);
+                C3d.escribir("}\n", esInit);
+            }
+            if (raiz.ToString().CompareTo(ConstantesJC.METODO) == 0)
             {
-                //Colocar el fin del bloque
-                if(raiz.ToString().CompareTo(ConstantesJC.CLASE) !=0){
-                    C3d.escribir(final+":", esInit);
-                }
+                C3d.escribir(final+":", esInit);
                 C3d.escribir("}\n", esInit);
             }
         }
@@ -155,7 +220,8 @@ namespace CompilerCollection.CompilerCollection.C3D
         {
             String t1 = C3d.generarTemp();
             //Iniciar el constructor
-            C3d.escribir(referencia + "{", false);
+            C3d.escribir("void " + referencia + "() {", false);
+            final = C3d.generarEtq();
             C3d.aumentarP(tamanio.ToString(), false);
             C3d.escribir(clase + "_$init();", false);
             //Obteniendo el return de init
@@ -479,7 +545,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             return resultado;            
         }
 
-        public static void resolverRetorno(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit) {
+        public void resolverRetorno(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit) {
 
             if (raiz.ChildNodes.Count() == 1)
             {
@@ -507,7 +573,7 @@ namespace CompilerCollection.CompilerCollection.C3D
 
         }
 
-        public static void resolverNoSql(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit){
+        public void resolverNoSql(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit){
             // _create + expresion + lexps 
             if (raiz.ChildNodes.ElementAt(0).FindTokenAndGetText().Equals("create", StringComparison.OrdinalIgnoreCase))
             {
@@ -541,7 +607,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             }
         }
 
-        public static void resolverCreate(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit) {
+        public void resolverCreate(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit) {
             /**
              * _create + expresion + lexps 
              * STACK
@@ -560,6 +626,9 @@ namespace CompilerCollection.CompilerCollection.C3D
             String temp1= "";
             Expresion exp = new Expresion(ctxG, ctxL, ambito, esInit);
 
+            //Simular el cambio de ambito
+            String cambio = C3d.generarTemp();
+            C3d.escribirOperacion(cambio, "P", "+", ambito.tamanio.ToString(), false);
             
             //Resolviendo el nombre de la colección
             nCollection = exp.resolver(raiz.ChildNodes.ElementAt(1));
@@ -585,19 +654,19 @@ namespace CompilerCollection.CompilerCollection.C3D
             //Escribir los datos como parametros
             int pos = 2;
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", pos.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", pos.ToString(), esInit);
             C3d.escribirEnPila(temp1, nCollection.cad, esInit);
             //Escribir el numero de cols
             pos += 1;
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", pos.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", pos.ToString(), esInit);
             C3d.escribirEnPila(temp1, cols.ToString(), esInit);
             //Escribir los puntero de las columnas
             foreach (C3d parametro in soluciones)
             {
                 pos += 1;
                 temp1 = C3d.generarTemp();
-                C3d.escribirOperacion(temp1, "P", "+", pos.ToString(), esInit);
+                C3d.escribirOperacion(temp1, cambio, "+", pos.ToString(), esInit);
                 C3d.escribirEnPila(temp1, parametro.cad, esInit);
             }
             //Generar la llamada para create();
@@ -607,7 +676,7 @@ namespace CompilerCollection.CompilerCollection.C3D
         
         }
 
-        public static void resolverSelect(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit)
+        public void resolverSelect(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit)
         {
             /**
              * _select + lexps +  expresion 
@@ -628,6 +697,11 @@ namespace CompilerCollection.CompilerCollection.C3D
             List<C3d> soluciones = new List<C3d>();
             String temp1 = "";
             Expresion exp = new Expresion(ctxG, ctxL, ambito, esInit);
+
+            //Simular el cambio de ambito
+            String cambio = C3d.generarTemp();
+            C3d.escribirOperacion(cambio, "P", "+", ambito.tamanio.ToString(), false);
+
             //Resolviendo las columnas de la colección
             foreach (ParseTreeNode hijo in raiz.ChildNodes.ElementAt(1).ChildNodes)
             {
@@ -652,19 +726,19 @@ namespace CompilerCollection.CompilerCollection.C3D
             //Escribir los datos como parametros
             int pos = 2;
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", pos.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", pos.ToString(), esInit);
             C3d.escribirEnPila(temp1, nCollection.cad, esInit);
             //Escribir el numero de cols
             pos += 1;
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", pos.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", pos.ToString(), esInit);
             C3d.escribirEnPila(temp1, cols.ToString(), esInit);
             //Escribir los puntero de las columnas
             foreach (C3d parametro in soluciones)
             {
                 pos += 1;
                 temp1 = C3d.generarTemp();
-                C3d.escribirOperacion(temp1, "P", "+", pos.ToString(), esInit);
+                C3d.escribirOperacion(temp1, cambio, "+", pos.ToString(), esInit);
                 C3d.escribirEnPila(temp1, parametro.cad, esInit);
             }
             //Generar la llamada para el select();
@@ -673,7 +747,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             C3d.disminuirP(ambito.tamanio.ToString(), esInit);
         }
 
-        public static void resolverInsert(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit)
+        public void resolverInsert(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit)
         {
             /**
              * _insert + expresion   + lexps   + asigparams
@@ -701,6 +775,10 @@ namespace CompilerCollection.CompilerCollection.C3D
             List<C3d> valores = new List<C3d>();
             String temp1 = "";
             Expresion exp = new Expresion(ctxG, ctxL, ambito, esInit);
+
+            //Simular el cambio de ambito
+            String cambio = C3d.generarTemp();
+            C3d.escribirOperacion(cambio, "P", "+", ambito.tamanio.ToString(), false);
 
             //Resolviendo el nombre de la colección
             nCollection = exp.resolver(raiz.ChildNodes.ElementAt(1));
@@ -748,12 +826,12 @@ namespace CompilerCollection.CompilerCollection.C3D
             //Escribir los datos como parametros
             int pos = 2;
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", pos.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", pos.ToString(), esInit);
             C3d.escribirEnPila(temp1, nCollection.cad, esInit);
             //Escribir el numero de cols
             pos += 1;
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", pos.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", pos.ToString(), esInit);
             C3d.escribirEnPila(temp1, cols.ToString(), esInit);
 
             //Escribir los puntero de las columnas y los punteros de los valores
@@ -761,11 +839,11 @@ namespace CompilerCollection.CompilerCollection.C3D
             while (i < cols) {
                 pos += 1;
                 temp1 = C3d.generarTemp();
-                C3d.escribirOperacion(temp1, "P", "+", pos.ToString(), esInit);
+                C3d.escribirOperacion(temp1, cambio, "+", pos.ToString(), esInit);
                 C3d.escribirEnPila(temp1, soluciones[i].cad, esInit);
                 pos += 1;
                 temp1 = C3d.generarTemp();
-                C3d.escribirOperacion(temp1, "P", "+", pos.ToString(), esInit);
+                C3d.escribirOperacion(temp1, cambio, "+", pos.ToString(), esInit);
                 C3d.escribirEnPila(temp1, valores[i].cad, esInit);
                 i++;
             }
@@ -776,7 +854,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             C3d.disminuirP(ambito.tamanio.ToString(), esInit);
         }
 
-        public static void resolverUpdate(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit)
+        public void resolverUpdate(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit)
         {
             /**
              * _update + expresion   + expresion   +  expresion   +  expresion 
@@ -794,6 +872,10 @@ namespace CompilerCollection.CompilerCollection.C3D
             String temp1 = "";
             Expresion exp = new Expresion(ctxG, ctxL, ambito, esInit);
 
+            //Simular el cambio de ambito
+            String cambio = C3d.generarTemp();
+            C3d.escribirOperacion(cambio, "P", "+", ambito.tamanio.ToString(), false);
+
             //Resolviendo el nombre de la colección
             tExp = exp.resolver(raiz.ChildNodes.ElementAt(1));
             tExp = C3d.castearA(tExp, "String", ambito.tamanio, esInit);
@@ -804,7 +886,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             }
             //Escribiendo el puntero del nombre de la colección
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", cont.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", cont.ToString(), esInit);
             C3d.escribirEnPila(temp1, tExp.cad, esInit);
             cont++;
 
@@ -818,7 +900,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             }
             //Escribiendo el puntero del numero de columna
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", cont.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", cont.ToString(), esInit);
             C3d.escribirEnPila(temp1, tExp.cad, esInit);
             cont++;
 
@@ -833,7 +915,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             }
             //Escribiendo el puntero del valor actual de la columna
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", cont.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", cont.ToString(), esInit);
             C3d.escribirEnPila(temp1, tExp.cad, esInit);
             cont++;
 
@@ -847,7 +929,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             }
             //Escribiendo el puntero del valor nuevo de la columna
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", cont.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", cont.ToString(), esInit);
             C3d.escribirEnPila(temp1, tExp.cad, esInit);
 
             //Generar la llamada para update();
@@ -856,7 +938,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             C3d.disminuirP(ambito.tamanio.ToString(), esInit);
         }
 
-        public static void resolverDelete(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit)
+        public void resolverDelete(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit)
         {
             /**
              * _delete + expresion   + expresion   +  expresion 
@@ -873,6 +955,10 @@ namespace CompilerCollection.CompilerCollection.C3D
             String temp1 = "";
             Expresion exp = new Expresion(ctxG, ctxL, ambito, esInit);
 
+            //Simular el cambio de ambito
+            String cambio = C3d.generarTemp();
+            C3d.escribirOperacion(cambio, "P", "+", ambito.tamanio.ToString(), false);
+
             //Resolviendo el nombre de la colección
             tExp = exp.resolver(raiz.ChildNodes.ElementAt(1));
             tExp = C3d.castearA(tExp, "String", ambito.tamanio, esInit);
@@ -883,7 +969,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             }
             //Escribiendo el puntero del nombre de la colección
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", cont.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", cont.ToString(), esInit);
             C3d.escribirEnPila(temp1, tExp.cad, esInit);
             cont++;
 
@@ -897,7 +983,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             }
             //Escribiendo el puntero del nombre de la columna
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", cont.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", cont.ToString(), esInit);
             C3d.escribirEnPila(temp1, tExp.cad, esInit);
             cont++;
 
@@ -912,7 +998,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             }
             //Escribiendo el puntero del valor actual de la columna
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", cont.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", cont.ToString(), esInit);
             C3d.escribirEnPila(temp1, tExp.cad, esInit);
 
 
@@ -922,7 +1008,7 @@ namespace CompilerCollection.CompilerCollection.C3D
             C3d.disminuirP(ambito.tamanio.ToString(), esInit);
         }
 
-        public static void resolverDrop(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit)
+        public void resolverDrop(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz, bool esInit)
         {
             /**
              * _drop + expresion 
@@ -945,15 +1031,84 @@ namespace CompilerCollection.CompilerCollection.C3D
                 ManejadorErrores.General("No se ha podido obtener el nombre de la colección " + ambito.padre + "-" + ambito.nombre);
                 return;
             }
+
+            //Simular el cambio de ambito
+            String cambio = C3d.generarTemp();
+            C3d.escribirOperacion(cambio, "P", "+", ambito.tamanio.ToString(), false);
+            
             //Escribiendo el puntero del nombre de la colección
             temp1 = C3d.generarTemp();
-            C3d.escribirOperacion(temp1, "P", "+", cont.ToString(), esInit);
+            C3d.escribirOperacion(temp1, cambio, "+", cont.ToString(), esInit);
             C3d.escribirEnPila(temp1, tExp.cad, esInit);
  
             //Generar la llamada para drop();
             C3d.aumentarP(ambito.tamanio.ToString(), esInit);
             C3d.escribir("drop();", esInit);
             C3d.disminuirP(ambito.tamanio.ToString(), esInit);
+        }
+
+        public void resolverEscape(bool tipo, int fila, int columna) {
+            String etq = Compilador.Compilador.getEtqSalida(tipo);
+            if (etq == null) {
+                ManejadorErrores.Semantico("Sentencia de escape fuera de contexto", fila, columna);
+                return;
+            }
+            C3d.escribirSaltoIncond(etq, false);        
+        }
+
+        public void resolverIf(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+        }
+
+        public void resolverIfNot(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+        }
+
+        public void resolverWhile(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+        }
+
+        public void resolverDoWhile(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+        }
+
+        public void resolverWhilex(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+        }
+
+        public void resolverRepeat(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+        }
+
+        public void resolverOutString(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            C3d resultado = exp.resolver(raiz.ChildNodes.ElementAt(0));
+            resultado = C3d.castearA(resultado, "string", ambito.tamanio, false);
+            if (resultado == null) {
+                ManejadorErrores.General("La expresión no posee un formato de string o el tipo no se puede castear");
+                return;
+            }
+            String temp1 = C3d.generarTemp();
+            C3d.escribirOperacion(temp1, "P", "+", ambito.tamanio.ToString(), false);
+            String temp2 = C3d.generarTemp();
+            C3d.escribirOperacion(temp2, temp1, "+", "0", false);
+            C3d.escribirEnPila(temp2, resultado.cad, false);
+            C3d.aumentarP(ambito.tamanio.ToString(), false);
+            C3d.escribir("outString();", false);
+            C3d.disminuirP(ambito.tamanio.ToString(), false);
+        }
+
+        public void resolverOutInt(Simbolo ambito, Contexto ctxG, Contexto ctxL, ParseTreeNode raiz)
+        {
+            Expresion exp = new Expresion(ctxG, ctxL, ambito, false);
+            C3d resultado = exp.resolver(raiz.ChildNodes.ElementAt(0));
+            resultado = C3d.castearA(resultado, "int", ambito.tamanio, false);
+            if (resultado == null) {
+                ManejadorErrores.General("La expresión no posee un formato de int");
+                return;
+            }
+            C3d.escribir("printf(\"%d\"," + resultado.cad + ");", false);
         }
 
     }

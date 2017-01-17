@@ -22,6 +22,34 @@ namespace CompilerCollection.CompilerCollection.Compilador
             C3d.iniciarC3d();
         }
 
+        public static String getEtqSalida(bool tipo) {
+            if (display==null || display.Count() == 0) {
+                return null;
+            }
+            if (tipo) {
+                return display.Last().etqInicio;
+            }
+            return display.Last().etqFinal;
+        }
+
+        public static void generarEtqsSalida() {
+            Entorno entorno = new Entorno();
+            entorno.etqInicio = C3d.generarEtq();
+            entorno.etqFinal = C3d.generarEtq();
+            if (display == null)
+            {
+                display = new Stack<Entorno>();
+            }
+            display.Push(entorno);
+        }
+
+        public static void eliminarEtqsSalida() {
+            if (display == null) {
+                return;
+            }
+            display.Pop();
+        }
+
         public static List<ClaseJCode> obtenerClasePorArchivo(String archivo)
         {
             List<ClaseJCode> cls = new List<ClaseJCode>();
